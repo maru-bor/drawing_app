@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using SkiaSharp;
@@ -9,62 +10,54 @@ namespace drawing_app;
 
 public class CanvasControl : SKElement
 {
-    private SKBitmap _canvasBitmap;
-    private SKCanvas _canvas;
-    private bool _isDrawing;
-    private SKPoint _lastPoint;
+    private readonly List<List<SKPoint>> _strokes = new();
+    private List<SKPoint> _currentStroke = null;
 
     public CanvasControl()
     {
-        Loaded += (_, _) => InitBitmap();
+        // Handle mouse input
         MouseDown += OnMouseDown;
         MouseMove += OnMouseMove;
         MouseUp += OnMouseUp;
+
+        // Enable redraw when resized
+        SizeChanged += (_, __) => InvalidateVisual();
     }
-    private void InitBitmap()
+
+    private SKPoint GetMousePosition(MouseEventArgs e)
     {
-        int pixelWidth = Math.Max(1, (int)ActualWidth);
-        int pixelHeight = Math.Max(1, (int)ActualHeight);
-
-        if (_canvasBitmap != null)
-            _canvasBitmap.Dispose();
-
-        _canvasBitmap = new SKBitmap(pixelWidth, pixelHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-        _canvas = new SKCanvas(_canvasBitmap);
-        _canvas.Clear(SKColors.White);
+        var pos = e.GetPosition(this);
+        return new SKPoint((float)pos.X, (float)pos.Y);
     }
-
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            _isDrawing = true;
-            var pos = e.GetPosition(this);
-
-            float scaleX = _canvasBitmap.Width / (float)ActualWidth;
-            float scaleY = _canvasBitmap.Height / (float)ActualHeight;
-
-            _lastPoint = new SKPoint((float)pos.X * scaleX, (float)pos.Y * scaleY);
-        }
-    }
-    
-    private void OnMouseUp(object sender, MouseButtonEventArgs e)
-    {
-        if (e.LeftButton == MouseButtonState.Released)
-        {
-            _isDrawing = false;
+            _currentStroke = new List<SKPoint> { GetMousePosition(e) };
+            _strokes.Add(_currentStroke);
         }
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        if (!_isDrawing) return;
+        if (_currentStroke == null || e.LeftButton != MouseButtonState.Pressed)
+            return;
 
-        var pos = e.GetPosition(this);
-        float scaleX = _canvasBitmap.Width / (float)ActualWidth;
-        float scaleY = _canvasBitmap.Height / (float)ActualHeight;
-        var currentPoint = new SKPoint((float)pos.X * scaleX, (float)pos.Y * scaleY);
+        _currentStroke.Add(GetMousePosition(e));
+        InvalidateVisual(); // request redraw
+    }
+
+    private void OnMouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (_currentStroke != null)
+            _currentStroke = null;
+    }
+
+    protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.White);
 
         using var paint = new SKPaint
         {
@@ -74,37 +67,12 @@ public class CanvasControl : SKElement
             StrokeCap = SKStrokeCap.Round,
             StrokeJoin = SKStrokeJoin.Round
         };
-        
-        _canvas.DrawLine(_lastPoint, currentPoint, paint);
 
-        _lastPoint = currentPoint;
-        InvalidateVisual();
-
-    }
-    
-    protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
-    {
-        base.OnPaintSurface(e);
-        if (_canvasBitmap != null)
+        foreach (var stroke in _strokes)
         {
-            var canvas = e.Surface.Canvas;
-            canvas.DrawBitmap(_canvasBitmap, 0, 0);
+            for (int i = 1; i < stroke.Count; i++)
+                canvas.DrawLine(stroke[i - 1], stroke[i], paint);
         }
-    }
-
-    protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-    {
-        base.OnRenderSizeChanged(sizeInfo);
-
-        int pixelWidth = Math.Max(1, (int)ActualWidth);
-        int pixelHeight = Math.Max(1, (int)ActualHeight);
-
-        _canvasBitmap?.Dispose();
-        _canvasBitmap = new SKBitmap(pixelWidth, pixelHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-        _canvas = new SKCanvas(_canvasBitmap);
-        _canvas.Clear(SKColors.White);
-
-        InvalidateVisual();
     }
 
 
