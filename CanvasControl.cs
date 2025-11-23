@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using System.Windows.Media;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -15,7 +12,7 @@ public class CanvasControl : SKElement
     private readonly List<float> _strokeWidths = new();
     private readonly List<byte> _strokeAlphas = new();
     private readonly Stack<(List<SKPoint>, float, byte)> _redoStack = new();
-    private List<SKPoint> _currentStroke = null;
+    private List<SKPoint> _currentStroke = new();
     
     public float BrushThickness { get; set; } = 4f;
     public byte BrushOpacity { get; set; } = 255;
@@ -50,7 +47,7 @@ public class CanvasControl : SKElement
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        if (_currentStroke == null || e.LeftButton != MouseButtonState.Pressed)
+        if (e.LeftButton != MouseButtonState.Pressed)
             return;
 
         _currentStroke.Add(GetMousePosition(e));
