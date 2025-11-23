@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
@@ -27,7 +28,8 @@ public class CanvasControl : SKElement
     private SKPoint GetMousePosition(MouseEventArgs e)
     {
         var pos = e.GetPosition(this);
-        return new SKPoint((float)pos.X, (float)pos.Y);
+        double dpiScale = VisualTreeHelper.GetDpi(this).DpiScaleX; 
+        return new SKPoint((float)(pos.X * dpiScale), (float)(pos.Y * dpiScale));
     }
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
