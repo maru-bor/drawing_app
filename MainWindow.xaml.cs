@@ -21,4 +21,14 @@ public partial class MainWindow : Window
         InitializeComponent();
         WindowState = WindowState.Maximized;
     }
+    
+    private void Undo_Click(object sender, RoutedEventArgs e)
+    {
+        DrawingCanvas.Undo();
+    }
+
+    private void Redo_Click(object sender, RoutedEventArgs e)
+    {
+        DrawingCanvas.Redo();
+    }
 }

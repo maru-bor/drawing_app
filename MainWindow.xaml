@@ -9,7 +9,8 @@
     <Grid>
        
         <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="200" Background="LightPink">
-         
+            <Button Content="Undo" Click="Undo_Click" Width="60" Margin="5"/>
+            <Button Content="Redo" Click="Redo_Click" Width="60" Margin="5"/>
         </StackPanel>
 
       

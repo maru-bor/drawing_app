@@ -12,16 +12,15 @@ namespace drawing_app;
 public class CanvasControl : SKElement
 {
     private readonly List<List<SKPoint>> _strokes = new();
+    private readonly Stack<List<SKPoint>> _redoStack = new();
     private List<SKPoint> _currentStroke = null;
 
     public CanvasControl()
     {
-        // Handle mouse input
+       
         MouseDown += OnMouseDown;
         MouseMove += OnMouseMove;
         MouseUp += OnMouseUp;
-
-        // Enable redraw when resized
         SizeChanged += (_, __) => InvalidateVisual();
     }
 
@@ -38,6 +37,7 @@ public class CanvasControl : SKElement
         {
             _currentStroke = new List<SKPoint> { GetMousePosition(e) };
             _strokes.Add(_currentStroke);
+            _redoStack.Clear();
         }
     }
 
@@ -47,13 +47,29 @@ public class CanvasControl : SKElement
             return;
 
         _currentStroke.Add(GetMousePosition(e));
-        InvalidateVisual(); // request redraw
+        InvalidateVisual(); 
     }
 
     private void OnMouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (_currentStroke != null)
-            _currentStroke = null;
+        _currentStroke = null;
+    }
+    
+    public void Undo()
+    {
+        if (_strokes.Count == 0) return;
+        var last = _strokes[_strokes.Count - 1];
+        _strokes.RemoveAt(_strokes.Count - 1);
+        _redoStack.Push(last);
+        InvalidateVisual();
+    }
+
+    public void Redo()
+    {
+        if (_redoStack.Count == 0) return;
+        var stroke = _redoStack.Pop();
+        _strokes.Add(stroke);
+        InvalidateVisual();
     }
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
