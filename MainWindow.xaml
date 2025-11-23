@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="MainWindow">
+    <Grid Margin="0">
+        <local:CanvasControl  HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Margin="0"/>
     </Grid>
 </Window>
