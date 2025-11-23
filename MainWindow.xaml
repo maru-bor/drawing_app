@@ -6,7 +6,19 @@
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
         Title="MainWindow">
-    <Grid Margin="0">
-        <local:CanvasControl/>
+    <Grid>
+       
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="200" Background="LightPink">
+         
+        </StackPanel>
+
+      
+        <Border BorderBrush="Black" BorderThickness="2"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="1200" Height="800" Background="White">
+            <local:CanvasControl x:Name="DrawingCanvas"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"/>
+        </Border>
     </Grid>
 </Window>
