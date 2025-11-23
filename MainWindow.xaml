@@ -11,6 +11,13 @@
         <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="200" Background="LightPink">
             <Button Content="Undo" Click="Undo_Click" Width="60" Margin="5"/>
             <Button Content="Redo" Click="Redo_Click" Width="60" Margin="5"/>
+            
+            <TextBlock Text="Thickness:" VerticalAlignment="Center" Margin="5,0"/>
+            <Slider x:Name="ThicknessSlider" Minimum="1" Maximum="50" Value="4" Width="150" Margin="5" ValueChanged="ThicknessSlider_ValueChanged"/>
+        
+           
+            <TextBlock Text="Opacity:" VerticalAlignment="Center" Margin="5,0"/>
+            <Slider x:Name="OpacitySlider" Minimum="0" Maximum="255" Value="255" Width="150" Margin="5" ValueChanged="OpacitySlider_ValueChanged"/>
         </StackPanel>
 
       

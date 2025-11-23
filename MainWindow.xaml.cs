@@ -31,4 +31,16 @@ public partial class MainWindow : Window
     {
         DrawingCanvas.Redo();
     }
+    
+    private void ThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (DrawingCanvas != null)
+            DrawingCanvas.BrushThickness = (float)e.NewValue;
+    }
+
+    private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (DrawingCanvas != null)
+            DrawingCanvas.BrushOpacity = (byte)e.NewValue;
+    }
 }
