@@ -69,14 +69,13 @@ public class CanvasControl : SKElement
             using var paint = new SKPaint
             {
                 Color = new SKColor(0, 0, 0, _strokeAlphas[i]),
-                StrokeWidth = _strokeWidths[i],
                 IsAntialias = true,
                 StrokeCap = SKStrokeCap.Round,
-                StrokeJoin = SKStrokeJoin.Bevel
             };
 
-            for (int j = 1; j < stroke.Count; j++)
-                canvas.DrawLine(stroke[j - 1], stroke[j], paint);
+            float brushSize = _strokeWidths[i];
+
+            DrawSmoothStroke(canvas, stroke, paint, brushSize);
         }
     }
     public void Undo()
