@@ -103,6 +103,45 @@ public class CanvasControl : SKElement
         _strokeAlphas.Add(alpha);
         InvalidateVisual();
     }
+    
+    private void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize)
+    {
+        if (points == null || points.Count == 0)
+            return;
+
+        float spacing = brushSize * 0.25f; 
+        float radius = brushSize / 2f;
+
+        SKPoint lastDab = points[0];
+        canvas.DrawCircle(lastDab, radius, paint);
+
+        for (int i = 1; i < points.Count; i++)
+        {
+            var p0 = points[i - 1];
+            var p1 = points[i];
+
+            float distance = SKPoint.Distance(p0, p1);
+            int steps = Math.Max(1, (int)(distance / (spacing / 2)));
+
+            for (int j = 0; j <= steps; j++)
+            {
+                float t = j / (float)steps;
+                var pos = new SKPoint(
+                    p0.X + (p1.X - p0.X) * t,
+                    p0.Y + (p1.Y - p0.Y) * t
+                );
+
+                float dabDistance = SKPoint.Distance(lastDab, pos);
+
+                if (dabDistance >= spacing)
+                {
+                    canvas.DrawCircle(pos, radius, paint);
+                    lastDab = pos;
+                }
+            }
+        }
+    }
+
 
    
 
