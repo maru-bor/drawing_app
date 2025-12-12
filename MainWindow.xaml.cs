@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SkiaSharp;
 
 namespace drawing_app;
 
@@ -42,5 +43,11 @@ public partial class MainWindow : Window
     {
         if (DrawingCanvas != null)
             DrawingCanvas.BrushOpacity = (byte)e.NewValue;
+    }
+    
+    private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+    {
+        if (e.NewValue.HasValue)
+            DrawingCanvas.BrushColor = new SKColor(e.NewValue.Value.R, e.NewValue.Value.G, e.NewValue.Value.B);
     }
 }

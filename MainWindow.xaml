@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
         Title="MainWindow">
@@ -18,6 +19,11 @@
            
             <TextBlock Text="Opacity:" VerticalAlignment="Center" Margin="5,0"/>
             <Slider x:Name="OpacitySlider" Minimum="0" Maximum="255" Value="255" Width="150" Margin="5" ValueChanged="OpacitySlider_ValueChanged"/>
+            
+            <xctk:ColorPicker
+                Width="150"
+                Height="30"
+                SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
         </StackPanel>
 
       

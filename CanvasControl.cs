@@ -11,11 +11,13 @@ public class CanvasControl : SKElement
     private readonly List<List<SKPoint>> _strokes = new();
     private readonly List<float> _strokeWidths = new();
     private readonly List<byte> _strokeAlphas = new();
-    private readonly Stack<(List<SKPoint>, float, byte)> _redoStack = new();
+    private readonly Stack<(List<SKPoint>, float, byte, SKColor)> _redoStack = new();
+    private readonly List<SKColor> _strokeColors = new();
     private List<SKPoint> _currentStroke = new();
     
     public float BrushThickness { get; set; } = 4f;
     public byte BrushOpacity { get; set; } = 255;
+    public SKColor BrushColor { get; set; } = new SKColor(0, 0, 0);
 
     public CanvasControl()
     {
@@ -41,12 +43,17 @@ public class CanvasControl : SKElement
             _strokes.Add(_currentStroke);
             _strokeWidths.Add(BrushThickness);
             _strokeAlphas.Add(BrushOpacity);
+            _strokeColors.Add(BrushColor);
             _redoStack.Clear();
         }
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
+        
+        if (_currentStroke == null)
+            return;
+        
         if (e.LeftButton != MouseButtonState.Pressed)
             return;
 
@@ -68,7 +75,7 @@ public class CanvasControl : SKElement
             var stroke = _strokes[i];
             using var paint = new SKPaint
             {
-                Color = new SKColor(0, 0, 0, _strokeAlphas[i]),
+                Color = _strokeColors[i].WithAlpha(_strokeAlphas[i]),
                 IsAntialias = true,
                 StrokeCap = SKStrokeCap.Round,
             };
@@ -84,22 +91,25 @@ public class CanvasControl : SKElement
         var lastStroke = _strokes[_strokes.Count - 1];
         var lastWidth = _strokeWidths[_strokeWidths.Count - 1];
         var lastAlpha = _strokeAlphas[_strokeAlphas.Count - 1];
+        var lastColor = _strokeColors[_strokeColors.Count - 1];
 
+        _strokeColors.RemoveAt(_strokeColors.Count - 1);
         _strokes.RemoveAt(_strokes.Count - 1);
         _strokeWidths.RemoveAt(_strokeWidths.Count - 1);
         _strokeAlphas.RemoveAt(_strokeAlphas.Count - 1);
 
-        _redoStack.Push((lastStroke, lastWidth, lastAlpha));
+        _redoStack.Push((lastStroke, lastWidth, lastAlpha, lastColor));
         InvalidateVisual();
     }
 
     public void Redo()
     {
         if (_redoStack.Count == 0) return;
-        var (stroke, width, alpha) = _redoStack.Pop();
+        var (stroke, width, alpha,color) = _redoStack.Pop();
         _strokes.Add(stroke);
         _strokeWidths.Add(width);
         _strokeAlphas.Add(alpha);
+        _strokeColors.Add(color);
         InvalidateVisual();
     }
     

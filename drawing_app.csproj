@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
       <PackageReference Include="SkiaSharp" Version="3.119.2-preview.1" />
       <PackageReference Include="SkiaSharp.Views" Version="3.119.2-preview.1" />
       <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.2-preview.1" />
