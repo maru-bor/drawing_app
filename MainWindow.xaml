@@ -8,8 +8,16 @@
         mc:Ignorable="d"
         Title="MainWindow">
     <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+
+            <ColumnDefinition Width="*"/>
+
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
        
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="200" Background="LightPink">
+        <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Width="200" Background="LightPink">
             <Button Content="Undo" Click="Undo_Click" Width="60" Margin="5"/>
             <Button Content="Redo" Click="Redo_Click" Width="60" Margin="5"/>
             
@@ -27,43 +35,51 @@
         </StackPanel>
 
       
-        <Border BorderBrush="Black" BorderThickness="2"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                Width="1200" Height="800" Background="White">
+        <Border Grid.Column="1" BorderBrush="Black" BorderThickness="2"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Width="1200" Height="800" Background="White">
             <local:CanvasControl x:Name="DrawingCanvas"
                                  HorizontalAlignment="Stretch"
                                  VerticalAlignment="Stretch"/>
         </Border>
-        <DockPanel>
+        <Border Grid.Column="2"
+                Background="#F3F3F3"
+                Padding="10"
+                BorderBrush="#CCC"
+                BorderThickness="1">
 
-            <TextBlock Text="Layers"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"
-                       DockPanel.Dock="Top"/>
+            <DockPanel>
 
-            <!-- Layer list -->
-            <ListBox x:Name="LayerList"
-                     SelectionChanged="LayerList_SelectionChanged"
-                     DisplayMemberPath="Name"
-                     Height="300"/>
+                <TextBlock Text="Layers"
+                           FontWeight="Bold"
+                           DockPanel.Dock="Top"
+                           Margin="0,0,0,10"/>
 
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="0,10,0,0"
-                        DockPanel.Dock="Bottom">
+                <ListBox x:Name="LayerList"
+                         DisplayMemberPath="Name"
+                         SelectionChanged="LayerList_SelectionChanged"
+                         DockPanel.Dock="Top"
+                         Height="300"/>
 
-                <Button Content="＋"
-                        Width="40"
-                        Margin="5"
-                        Click="AddLayer_Click"/>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,0"
+                            DockPanel.Dock="Bottom">
 
-                <Button Content="🗑"
-                        Width="40"
-                        Margin="5"
-                        Click="DeleteLayer_Click"/>
-            </StackPanel>
+                    <Button Content="＋"
+                            Width="40"
+                            Height="100"
+                            Margin="5"
+                            Click="AddLayer_Click"/>
 
-        </DockPanel>
+                    <Button Content="🗑"
+                            Width="40"
+                            Height="100"
+                            Margin="5"
+                            Click="DeleteLayer_Click"/>
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>
