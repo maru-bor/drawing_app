@@ -117,7 +117,7 @@ public class CanvasControl : SKElement
     public void DeleteActiveLayer()
     {
         if (_layers.Count <= 1)
-            return; // Never delete last layer
+            return; 
 
         _layers.RemoveAt(_activeLayerIndex);
 

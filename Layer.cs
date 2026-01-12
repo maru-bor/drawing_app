@@ -12,6 +12,10 @@ public class Layer
     public Layer(int width, int height, string name)
     {
         Name = name;
-        Bitmap = new SKBitmap(width, height, true);
+        Bitmap = new SKBitmap(
+            new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul)
+        );
+
+        Bitmap.Erase(SKColors.Transparent);
     }
 }
