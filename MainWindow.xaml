@@ -34,5 +34,36 @@
                                  HorizontalAlignment="Stretch"
                                  VerticalAlignment="Stretch"/>
         </Border>
+        <DockPanel>
+
+            <TextBlock Text="Layers"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"
+                       DockPanel.Dock="Top"/>
+
+            <!-- Layer list -->
+            <ListBox x:Name="LayerList"
+                     SelectionChanged="LayerList_SelectionChanged"
+                     DisplayMemberPath="Name"
+                     Height="300"/>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0"
+                        DockPanel.Dock="Bottom">
+
+                <Button Content="＋"
+                        Width="40"
+                        Margin="5"
+                        Click="AddLayer_Click"/>
+
+                <Button Content="🗑"
+                        Width="40"
+                        Margin="5"
+                        Click="DeleteLayer_Click"/>
+            </StackPanel>
+
+        </DockPanel>
     </Grid>
 </Window>

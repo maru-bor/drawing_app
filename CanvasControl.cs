@@ -12,7 +12,8 @@ public class CanvasControl : SKElement
     private int _activeLayerIndex = 0;
     private readonly List<float> _strokeWidths = new();
     private readonly List<byte> _strokeAlphas = new();
-    private readonly Stack<(List<SKPoint>, float, byte, SKColor)> _redoStack = new();
+    private readonly Stack<SKBitmap> _undoStack = new();
+    private readonly Stack<SKBitmap> _redoStack = new();
     private readonly List<SKColor> _strokeColors = new();
     private List<SKPoint> _currentStroke = new();
     public IReadOnlyList<Layer> Layers => _layers;
@@ -52,7 +53,13 @@ public class CanvasControl : SKElement
                 _activeLayerIndex = value;
         }
     }
-
+    
+    private static SKBitmap CloneBitmap(SKBitmap source)
+    {
+        var clone = new SKBitmap(source.Info);
+        source.CopyTo(clone);
+        return clone;
+    }
 
 
     private SKPoint GetMousePosition(MouseEventArgs e)
@@ -66,6 +73,10 @@ public class CanvasControl : SKElement
     {
         if (e.LeftButton != MouseButtonState.Pressed)
             return;
+        
+        var activeLayer = _layers[_activeLayerIndex];
+        _undoStack.Push(CloneBitmap(activeLayer.Bitmap));
+        _redoStack.Clear();
 
         _currentStroke = new List<SKPoint>
         {
@@ -153,29 +164,31 @@ public class CanvasControl : SKElement
     }
     public void Undo()
     {
-        if (_strokes.Count == 0) return;
-        var lastStroke = _strokes[_strokes.Count - 1];
-        var lastWidth = _strokeWidths[_strokeWidths.Count - 1];
-        var lastAlpha = _strokeAlphas[_strokeAlphas.Count - 1];
-        var lastColor = _strokeColors[_strokeColors.Count - 1];
+        if (_undoStack.Count == 0)
+            return;
 
-        _strokeColors.RemoveAt(_strokeColors.Count - 1);
-        _strokes.RemoveAt(_strokes.Count - 1);
-        _strokeWidths.RemoveAt(_strokeWidths.Count - 1);
-        _strokeAlphas.RemoveAt(_strokeAlphas.Count - 1);
+        var layer = _layers[_activeLayerIndex];
 
-        _redoStack.Push((lastStroke, lastWidth, lastAlpha, lastColor));
+        _redoStack.Push(CloneBitmap(layer.Bitmap));
+
+        layer.Bitmap.Dispose();
+        layer.Bitmap = _undoStack.Pop();
+
         InvalidateVisual();
     }
 
     public void Redo()
     {
-        if (_redoStack.Count == 0) return;
-        var (stroke, width, alpha,color) = _redoStack.Pop();
-        _strokes.Add(stroke);
-        _strokeWidths.Add(width);
-        _strokeAlphas.Add(alpha);
-        _strokeColors.Add(color);
+        if (_redoStack.Count == 0)
+            return;
+
+        var layer = _layers[_activeLayerIndex];
+
+        _undoStack.Push(CloneBitmap(layer.Bitmap));
+
+        layer.Bitmap.Dispose();
+        layer.Bitmap = _redoStack.Pop();
+
         InvalidateVisual();
     }
     

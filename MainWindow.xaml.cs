@@ -20,6 +20,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Loaded += (_, __) =>
+        {
+            LayerList.ItemsSource = DrawingCanvas.Layers;
+            LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
+        };
         WindowState = WindowState.Maximized;
     }
     
@@ -49,5 +54,23 @@ public partial class MainWindow : Window
     {
         if (e.NewValue.HasValue)
             DrawingCanvas.BrushColor = new SKColor(e.NewValue.Value.R, e.NewValue.Value.G, e.NewValue.Value.B);
+    }
+    
+    private void LayerList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (LayerList.SelectedIndex >= 0)
+            DrawingCanvas.ActiveLayerIndex = LayerList.SelectedIndex;
+    }
+    
+    private void AddLayer_Click(object sender, RoutedEventArgs e)
+    {
+        DrawingCanvas.AddLayer();
+        LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
+    }
+
+    private void DeleteLayer_Click(object sender, RoutedEventArgs e)
+    {
+        DrawingCanvas.DeleteActiveLayer();
+        LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
     }
 }
