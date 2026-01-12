@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using System.Windows.Media;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -8,7 +9,7 @@ namespace drawing_app;
 
 public class CanvasControl : SKElement
 {
-    private List<Layer> _layers = new();
+    private ObservableCollection<Layer> _layers = new();
     private int _activeLayerIndex = 0;
     private readonly List<float> _strokeWidths = new();
     private readonly List<byte> _strokeAlphas = new();
@@ -16,7 +17,7 @@ public class CanvasControl : SKElement
     private readonly Stack<SKBitmap> _redoStack = new();
     private readonly List<SKColor> _strokeColors = new();
     private List<SKPoint> _currentStroke = new();
-    public IReadOnlyList<Layer> Layers => _layers;
+    public ObservableCollection<Layer> Layers => _layers;
     
     public float BrushThickness { get; set; } = 4f;
     public byte BrushOpacity { get; set; } = 255;
@@ -229,9 +230,4 @@ public class CanvasControl : SKElement
             }
         }
     }
-
-
-   
-
-
 }
