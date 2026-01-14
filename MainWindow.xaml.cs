@@ -24,6 +24,8 @@ public partial class MainWindow : Window
         {
             LayerList.ItemsSource = DrawingCanvas.Layers;
             LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
+            BrushList.ItemsSource = BrushLibrary.DefaultBrushes;
+            BrushList.SelectedIndex = 0;
         };
         WindowState = WindowState.Maximized;
     }
@@ -72,5 +74,11 @@ public partial class MainWindow : Window
     {
         DrawingCanvas.DeleteActiveLayer();
         LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
+    }
+    
+    private void BrushList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (BrushList.SelectedItem is BrushPreset brush)
+            DrawingCanvas.ApplyBrushPreset(brush);
     }
 }

@@ -22,6 +22,8 @@ public class CanvasControl : SKElement
     public float BrushThickness { get; set; } = 4f;
     public byte BrushOpacity { get; set; } = 255;
     public SKColor BrushColor { get; set; } = new SKColor(0, 0, 0);
+    public float BrushSpacing { get; set; } = 0.25f;
+    public bool IsEraser { get; set; } = false;
 
     public CanvasControl()
     {
@@ -53,6 +55,14 @@ public class CanvasControl : SKElement
             if (value >= 0 && value < _layers.Count)
                 _activeLayerIndex = value;
         }
+    }
+    
+    public void ApplyBrushPreset(BrushPreset brush)
+    {
+        BrushThickness = brush.Size;
+        BrushOpacity = brush.Opacity;
+        BrushSpacing = brush.Spacing;
+        IsEraser = brush.IsEraser;
     }
     
     private static SKBitmap CloneBitmap(SKBitmap source)
@@ -138,8 +148,11 @@ public class CanvasControl : SKElement
         using var paint = new SKPaint
         {
             IsAntialias = true,
-            Color = BrushColor.WithAlpha(BrushOpacity),
-            StrokeCap = SKStrokeCap.Round
+            StrokeCap = SKStrokeCap.Round,
+            Color = IsEraser
+                ? SKColors.Transparent
+                : BrushColor.WithAlpha(BrushOpacity),
+            BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
         };
 
         DrawSmoothStroke(canvas, stroke, paint, BrushThickness);
