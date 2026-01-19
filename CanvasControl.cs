@@ -211,7 +211,7 @@ public class CanvasControl : SKElement
         if (points == null || points.Count == 0)
             return;
 
-        float spacing = brushSize * 0.25f; 
+        float spacing = brushSize * 0.1f;
         float radius = brushSize / 2f;
 
         SKPoint lastDab = points[0];
@@ -223,9 +223,10 @@ public class CanvasControl : SKElement
             var p1 = points[i];
 
             float distance = SKPoint.Distance(p0, p1);
-            int steps = Math.Max(1, (int)(distance / (spacing / 2)));
 
-            for (int j = 0; j <= steps; j++)
+            int steps = Math.Max(1, (int)(distance / spacing));
+
+            for (int j = 1; j <= steps; j++)
             {
                 float t = j / (float)steps;
                 var pos = new SKPoint(

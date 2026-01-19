@@ -79,6 +79,11 @@ public partial class MainWindow : Window
     private void BrushList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (BrushList.SelectedItem is BrushPreset brush)
+        {
             DrawingCanvas.ApplyBrushPreset(brush);
+            ThicknessSlider.Value = brush.Size;
+            OpacitySlider.Value = brush.Opacity;
+        }
+           
     }
 }
