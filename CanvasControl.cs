@@ -101,10 +101,22 @@ public class CanvasControl : SKElement
         if (_currentStroke == null || e.LeftButton != MouseButtonState.Pressed)
             return;
 
-        _currentStroke.Add(GetMousePosition(e));
+        var newPoint = GetMousePosition(e);
 
-        DrawStrokeOnActiveLayer(_currentStroke);
-        InvalidateVisual(); 
+        _currentStroke.Add(newPoint);
+
+        if (_currentStroke.Count >= 2)
+        {
+            var lastTwo = new List<SKPoint>
+            {
+                _currentStroke[_currentStroke.Count - 2],
+                _currentStroke[_currentStroke.Count - 1]
+            };
+
+            DrawStrokeOnActiveLayer(lastTwo);
+        }
+
+        InvalidateVisual();
     }
 
     private void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -167,13 +179,7 @@ public class CanvasControl : SKElement
             if (!layer.Visible)
                 continue;
 
-            using var paint = new SKPaint
-            {
-                IsAntialias = true,
-                Color = SKColors.White.WithAlpha((byte)(layer.Opacity * 255))
-            };
-
-            canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
+            canvas.DrawBitmap(layer.Bitmap, 0, 0);
         }
     }
     public void Undo()
