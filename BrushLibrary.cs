@@ -8,10 +8,54 @@ public class BrushLibrary
     public static ObservableCollection<BrushPreset> DefaultBrushes { get; } =
         new ObservableCollection<BrushPreset>
         {
-            new BrushPreset("Pencil", 2f, 255, 0.6f),
-            new BrushPreset("Ink Pen", 5f, 255, 0.25f),
-            new BrushPreset("Soft Brush", 20f, 80, 0.15f),
-            new BrushPreset("Marker", 15f, 180, 0.35f),
-            new BrushPreset("Eraser", 20f, 255, 0.25f) { IsEraser = true }
+            new BrushPreset
+            {
+                Name = "Pencil",
+                Size = 2f,
+                Opacity = 255,
+                Spacing = 0.6f,
+                IsEraser = false,
+                BrushTip = null
+            },
+
+            new BrushPreset
+            {
+                Name = "Ink Pen",
+                Size = 5f,
+                Opacity = 255,
+                Spacing = 0.25f,
+                IsEraser = false,
+                BrushTip = null
+            },
+
+            new BrushPreset
+            {
+                Name = "Soft Brush",
+                Size = 20f,
+                Opacity = 80,
+                Spacing = 0.15f,
+                IsEraser = false,
+                BrushTip = null
+            },
+
+            new BrushPreset
+            {
+                Name = "Marker",
+                Size = 15f,
+                Opacity = 180,
+                Spacing = 0.35f,
+                IsEraser = false,
+                BrushTip = null
+            },
+
+            new BrushPreset
+            {
+                Name = "Eraser",
+                Size = 20f,
+                Opacity = 255,
+                Spacing = 0.25f,
+                IsEraser = true,
+                BrushTip = null
+            }
         };
 }
