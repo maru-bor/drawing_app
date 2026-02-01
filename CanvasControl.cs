@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using SkiaSharp;
@@ -11,12 +10,9 @@ namespace drawing_app;
 public class CanvasControl : SKElement
 {
     private ObservableCollection<Layer> _layers = new();
-    private int _activeLayerIndex = 0;
-    private readonly List<float> _strokeWidths = new();
-    private readonly List<byte> _strokeAlphas = new();
-    private readonly Stack<Stroke> _undoStack = new();
-    private readonly Stack<Stroke> _redoStack = new();
-    private readonly List<SKColor> _strokeColors = new();
+    private int _activeLayerIndex;
+    // private readonly Stack<Stroke> _undoStack = new();
+    // private readonly Stack<Stroke> _redoStack = new();
     private List<SKPoint> _currentStroke = new();
     public ObservableCollection<Layer> Layers => _layers;
     
@@ -85,8 +81,7 @@ public class CanvasControl : SKElement
     {
         if (e.LeftButton != MouseButtonState.Pressed)
             return;
-        
-        _redoStack.Clear();
+
         _currentStroke = new List<SKPoint>
         {
             GetMousePosition(e)
@@ -119,14 +114,23 @@ public class CanvasControl : SKElement
 
     private void OnMouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (_currentStroke != null && _currentStroke.Count > 1)
+        if (_currentStroke == null || _currentStroke.Count <= 1)
         {
-            _undoStack.Push(new Stroke(
-                new List<SKPoint>(_currentStroke),
-                BrushThickness,
-                BrushOpacity,
-                BrushColor));
+            _currentStroke = null;
+            return;
         }
+
+        var layer = _layers[_activeLayerIndex];
+
+        layer.UndoStack.Push(new Stroke(
+            new List<SKPoint>(_currentStroke),
+            BrushThickness,
+            BrushOpacity,
+            BrushColor,
+            IsEraser
+        ));
+
+        layer.RedoStack.Clear();
         _currentStroke = null;
     }
     
@@ -153,6 +157,33 @@ public class CanvasControl : SKElement
             _activeLayerIndex = _layers.Count - 1;
 
         InvalidateVisual();
+    }
+    
+    private void RebuildLayerBitmap(Layer layer)
+    {
+        int width = layer.Bitmap.Width;
+        int height = layer.Bitmap.Height;
+
+        layer.Bitmap.Dispose();
+        layer.Bitmap = new SKBitmap(width, height);
+
+        using var canvas = new SKCanvas(layer.Bitmap);
+        canvas.Clear(SKColors.Transparent);
+
+        foreach (var stroke in layer.UndoStack.Reverse())
+        {
+            using var paint = new SKPaint
+            {
+                IsAntialias = true,
+                StrokeCap = SKStrokeCap.Round,
+                Color = stroke.IsEraser
+                    ? SKColors.Transparent
+                    : stroke.Color.WithAlpha(stroke.Opacity),
+                BlendMode = stroke.IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
+            };
+
+            DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness);
+        }
     }
     
     private void DrawStrokeOnActiveLayer(List<SKPoint> stroke)
@@ -190,44 +221,27 @@ public class CanvasControl : SKElement
     }
     public void Undo()
     {
-        if (_undoStack.Count == 0)
+        var layer = _layers[_activeLayerIndex];
+
+        if (layer.UndoStack.Count == 0)
             return;
 
-        var lastStroke = _undoStack.Pop();
-        _redoStack.Push(lastStroke);
-
-        var layer = _layers[_activeLayerIndex];
-        layer.Bitmap.Dispose();
-        layer.Bitmap = new SKBitmap(layer.Bitmap.Width, layer.Bitmap.Height);
-
-        using var canvas = new SKCanvas(layer.Bitmap);
-
-        foreach (var stroke in _undoStack.Reverse())
-        {
-            using var paint = new SKPaint
-            {
-                IsAntialias = true,
-                StrokeCap = SKStrokeCap.Round,
-                Color = stroke.Color.WithAlpha(stroke.Opacity),
-                BlendMode = SKBlendMode.SrcOver
-            };
-
-            DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness);
-        }
-
+        layer.RedoStack.Push(layer.UndoStack.Pop());
+        RebuildLayerBitmap(layer);
         InvalidateVisual();
     }
+
     
 
     public void Redo()
     {
-        if (_redoStack.Count == 0)
+        var layer = _layers[_activeLayerIndex];
+
+        if (layer.RedoStack.Count == 0)
             return;
 
-        var stroke = _redoStack.Pop();
-        _undoStack.Push(stroke);
-
-        DrawStrokeOnActiveLayer(stroke.Points);
+        layer.UndoStack.Push(layer.RedoStack.Pop());
+        RebuildLayerBitmap(layer);
         InvalidateVisual();
     }
     

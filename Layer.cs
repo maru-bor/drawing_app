@@ -8,6 +8,10 @@ public class Layer
     public SKBitmap Bitmap { get; set; }
     public bool Visible { get; set; } = true;
     public float Opacity { get; set; } = 1f;
+    
+    public Stack<Stroke> UndoStack { get; } = new();
+    public Stack<Stroke> RedoStack { get; } = new();
+
 
     public Layer(int width, int height, string name)
     {
