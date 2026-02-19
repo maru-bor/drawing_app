@@ -86,4 +86,23 @@ public partial class MainWindow : Window
         }
            
     }
+    
+    private void ImportBrush_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new ImportBrushWindow
+        {
+            Owner = this
+        };
+
+        if (window.ShowDialog() == true && window.ResultBrush != null)
+        {
+            BrushLibrary.Add(window.ResultBrush);
+        }
+    }
+    
+    private void Exit_Click(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Shutdown();
+    }
+
 }

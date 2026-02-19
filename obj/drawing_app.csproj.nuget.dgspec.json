@@ -65,6 +65,10 @@
             "SkiaSharp.Views.WPF": {
               "target": "Package",
               "version": "[3.119.2-preview.1, )"
+            },
+            "WPF.UI": {
+              "target": "Package",
+              "version": "[3.4.2.7, )"
             }
           },
           "imports": [

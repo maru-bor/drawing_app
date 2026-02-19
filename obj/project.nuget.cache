@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "yJbDL0CF4yU=",
+  "dgSpecHash": "bJ2CtG36mtc=",
   "success": true,
   "projectFilePath": "C:\\Users\\marie\\RiderProjects\\drawing_app\\drawing_app.csproj",
   "expectedPackageFiles": [
@@ -12,7 +12,8 @@
     "C:\\Users\\marie\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.2-preview.1\\skiasharp.nativeassets.win32.3.119.2-preview.1.nupkg.sha512",
     "C:\\Users\\marie\\.nuget\\packages\\skiasharp.views\\3.119.2-preview.1\\skiasharp.views.3.119.2-preview.1.nupkg.sha512",
     "C:\\Users\\marie\\.nuget\\packages\\skiasharp.views.desktop.common\\3.119.2-preview.1\\skiasharp.views.desktop.common.3.119.2-preview.1.nupkg.sha512",
-    "C:\\Users\\marie\\.nuget\\packages\\skiasharp.views.wpf\\3.119.2-preview.1\\skiasharp.views.wpf.3.119.2-preview.1.nupkg.sha512"
+    "C:\\Users\\marie\\.nuget\\packages\\skiasharp.views.wpf\\3.119.2-preview.1\\skiasharp.views.wpf.3.119.2-preview.1.nupkg.sha512",
+    "C:\\Users\\marie\\.nuget\\packages\\wpf.ui\\3.4.2.7\\wpf.ui.3.4.2.7.nupkg.sha512"
   ],
   "logs": [
     {
@@ -59,6 +60,18 @@
       "warningLevel": 1,
       "filePath": "C:\\Users\\marie\\RiderProjects\\drawing_app\\drawing_app.csproj",
       "libraryId": "SkiaSharp.Views.WPF",
+      "targetGraphs": [
+        "net10.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "message": "Package 'WPF.UI 3.4.2.7' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net10.0-windows7.0'. This package may not be fully compatible with your project.",
+      "projectPath": "C:\\Users\\marie\\RiderProjects\\drawing_app\\drawing_app.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\marie\\RiderProjects\\drawing_app\\drawing_app.csproj",
+      "libraryId": "WPF.UI",
       "targetGraphs": [
         "net10.0-windows7.0"
       ]

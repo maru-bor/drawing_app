@@ -58,4 +58,9 @@ public class BrushLibrary
                 BrushTip = null
             }
         };
+    public static void Add(BrushPreset brush)
+    {
+        if (brush == null) return;
+        DefaultBrushes.Add(brush);
+    }
 }

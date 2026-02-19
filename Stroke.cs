@@ -9,14 +9,16 @@ public class Stroke
     public byte Opacity { get; }
     public SKColor Color { get; }
     public bool IsEraser { get; }
+    public float Spacing { get; }
 
 
-    public Stroke(List<SKPoint> points, float thickness, byte opacity, SKColor color, bool isEraser = false)
+    public Stroke(List<SKPoint> points, float thickness, byte opacity, SKColor color, bool isEraser, float spacing)
     {
         Points = points;
         Thickness = thickness;
         Opacity = opacity;
         Color = color;
         IsEraser = isEraser;
+        Spacing = spacing;
     }
 }
