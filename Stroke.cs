@@ -10,9 +10,11 @@ public class Stroke
     public SKColor Color { get; }
     public bool IsEraser { get; }
     public float Spacing { get; }
+    public SKBitmap? BrushTip { get; }
 
 
-    public Stroke(List<SKPoint> points, float thickness, byte opacity, SKColor color, bool isEraser, float spacing)
+
+    public Stroke(List<SKPoint> points, float thickness, byte opacity, SKColor color, bool isEraser, float spacing, SKBitmap? brushTip)
     {
         Points = points;
         Thickness = thickness;
@@ -20,5 +22,6 @@ public class Stroke
         Color = color;
         IsEraser = isEraser;
         Spacing = spacing;
+        BrushTip = brushTip;
     }
 }

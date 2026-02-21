@@ -30,11 +30,11 @@
             </MenuItem>
             
             <MenuItem Header="Undo"
-                Click="ImportBrush_Click"/>
+                Click="Undo_Click"/>
          
             
             <MenuItem Header="Redo"
-                Click="ImportBrush_Click"/>
+                Click="Redo_Click"/>
           
 
         </Menu>
@@ -48,8 +48,6 @@
           
             
             <StackPanel Grid.Column="0" Background="#FAFAFA">
-            <Button Content="Undo" Click="Undo_Click" Width="60" Margin="5"/>
-            <Button Content="Redo" Click="Redo_Click" Width="60" Margin="5"/>
             
             <xctk:ColorCanvas
                 Width="300"

@@ -121,7 +121,8 @@ public class CanvasControl : SKElement
             BrushOpacity,
             BrushColor,
             IsEraser,
-            BrushSpacing 
+            BrushSpacing,
+            ActiveBrushTip 
         ));
 
         layer.RedoStack.Clear();
@@ -174,7 +175,12 @@ public class CanvasControl : SKElement
                 BlendMode = stroke.IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
             };
 
+            var previousTip = ActiveBrushTip;
+            ActiveBrushTip = stroke.BrushTip;
+
             DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness, stroke.Spacing);
+
+            ActiveBrushTip = previousTip;
         }
     }
     
@@ -237,6 +243,37 @@ public class CanvasControl : SKElement
         InvalidateVisual();
     }
     
+    private void DrawDab(SKCanvas canvas, SKPoint position, SKPaint paint, float size)
+    {
+        if (ActiveBrushTip != null)
+        {
+            float half = size / 2f;
+
+            var dest = new SKRect(
+                position.X - half,
+                position.Y - half,
+                position.X + half,
+                position.Y + half
+            );
+
+            using var bitmapPaint = new SKPaint
+            {
+                IsAntialias = true,
+                BlendMode = paint.BlendMode,
+
+                ColorFilter = SKColorFilter.CreateBlendMode(
+                    paint.Color,
+                    SKBlendMode.SrcIn)
+            };
+
+            canvas.DrawBitmap(ActiveBrushTip, dest, bitmapPaint);
+        }
+        else
+        {
+            canvas.DrawCircle(position, size / 2f, paint);
+        }
+    }
+    
     
     public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing)
     {
@@ -245,7 +282,9 @@ public class CanvasControl : SKElement
 
         float radius = brushSize / 2f;
         SKPoint lastDab = points[0];
-        canvas.DrawCircle(lastDab, radius, paint);
+
+        float fixedSpacing = brushSize * spacing;
+        DrawDab(canvas, lastDab, paint, brushSize);
 
         for (int i = 1; i < points.Count; i++)
         {
@@ -253,45 +292,23 @@ public class CanvasControl : SKElement
             var p1 = points[i];
 
             float distance = SKPoint.Distance(p0, p1);
-            int steps = Math.Max(1, (int)(distance / spacing));
+            int steps = Math.Max(1, (int)(distance / fixedSpacing));
 
             for (int j = 1; j <= steps; j++)
             {
                 float t = j / (float)steps;
+
                 var pos = new SKPoint(
                     p0.X + (p1.X - p0.X) * t,
                     p0.Y + (p1.Y - p0.Y) * t
                 );
 
-                if (SKPoint.Distance(lastDab, pos) >= spacing)
+                if (SKPoint.Distance(lastDab, pos) >= fixedSpacing)
                 {
-                    canvas.DrawCircle(pos, radius, paint);
+                    DrawDab(canvas, pos, paint, brushSize);
                     lastDab = pos;
                 }
             }
         }
-    }
-    
-    public void DrawBrushDab(
-        SKCanvas canvas,
-        SKPoint position,
-        float size,
-        SKPaint paint,
-        SKBitmap? brushTip)
-    {
-        if (brushTip == null)
-        {
-            canvas.DrawCircle(position, size / 2f, paint);
-            return;
-        }
-
-        float scale = size / Math.Max(brushTip.Width, brushTip.Height);
-
-        canvas.Save();
-        canvas.Translate(position.X, position.Y);
-        canvas.Scale(scale);
-        canvas.Translate(-brushTip.Width / 2f, -brushTip.Height / 2f);
-        canvas.DrawBitmap(brushTip, 0, 0, paint);
-        canvas.Restore();
     }
 }
