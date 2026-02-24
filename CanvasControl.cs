@@ -11,8 +11,6 @@ public class CanvasControl : SKElement
 {
     private ObservableCollection<Layer> _layers = new();
     private int _activeLayerIndex;
-    // private readonly Stack<Stroke> _undoStack = new();
-    // private readonly Stack<Stroke> _redoStack = new();
     private List<SKPoint> _currentStroke = new();
     public ObservableCollection<Layer> Layers => _layers;
     
@@ -22,6 +20,7 @@ public class CanvasControl : SKElement
     public float BrushSpacing { get; set; } = 0.25f;
     public bool IsEraser { get; set; } = false;
     public SKBitmap? ActiveBrushTip { get; set; }
+    private SKBitmap? _livePreviewBackup;
 
     public CanvasControl()
     {
@@ -79,6 +78,10 @@ public class CanvasControl : SKElement
         {
             GetMousePosition(e)
         };
+
+        var layer = _layers[_activeLayerIndex];
+        _livePreviewBackup?.Dispose();
+        _livePreviewBackup = layer.Bitmap.Copy();
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
@@ -88,19 +91,25 @@ public class CanvasControl : SKElement
             return;
 
         var newPoint = GetMousePosition(e);
-
         _currentStroke.Add(newPoint);
 
-        if (_currentStroke.Count >= 2)
-        {
-            var lastTwo = new List<SKPoint>
-            {
-                _currentStroke[_currentStroke.Count - 2],
-                _currentStroke[_currentStroke.Count - 1]
-            };
+        var layer = _layers[_activeLayerIndex];
 
-            DrawStrokeOnActiveLayer(lastTwo);
-        }
+        layer.Bitmap.Dispose();
+        layer.Bitmap = _livePreviewBackup!.Copy();
+
+        using var canvas = new SKCanvas(layer.Bitmap);
+        using var paint = new SKPaint
+        {
+            IsAntialias = true,
+            StrokeCap = SKStrokeCap.Round,
+            Color = IsEraser
+                ? SKColors.Transparent
+                : BrushColor.WithAlpha(BrushOpacity),
+            BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
+        };
+
+        DrawSmoothStroke(canvas, _currentStroke, paint, BrushThickness, BrushSpacing, ActiveBrushTip);
 
         InvalidateVisual();
     }
@@ -122,11 +131,15 @@ public class CanvasControl : SKElement
             BrushColor,
             IsEraser,
             BrushSpacing,
-            ActiveBrushTip 
+            ActiveBrushTip?.Copy()
         ));
 
         layer.RedoStack.Clear();
+
         _currentStroke = null;
+
+        _livePreviewBackup?.Dispose();
+        _livePreviewBackup = null;
     }
     
     public void AddLayer()
@@ -175,12 +188,7 @@ public class CanvasControl : SKElement
                 BlendMode = stroke.IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
             };
 
-            var previousTip = ActiveBrushTip;
-            ActiveBrushTip = stroke.BrushTip;
-
-            DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness, stroke.Spacing);
-
-            ActiveBrushTip = previousTip;
+            DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness, stroke.Spacing, stroke.BrushTip);
         }
     }
     
@@ -202,7 +210,7 @@ public class CanvasControl : SKElement
             BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
         };
 
-        DrawSmoothStroke(canvas, stroke, paint, BrushThickness, BrushSpacing);
+        DrawSmoothStroke(canvas, stroke, paint, BrushThickness, BrushSpacing, ActiveBrushTip);
     }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
@@ -243,9 +251,9 @@ public class CanvasControl : SKElement
         InvalidateVisual();
     }
     
-    private void DrawDab(SKCanvas canvas, SKPoint position, SKPaint paint, float size)
+    private void DrawDab(SKCanvas canvas, SKPoint position, SKPaint paint, float size, SKBitmap? brushTip)
     {
-        if (ActiveBrushTip != null)
+        if (brushTip != null)
         {
             float half = size / 2f;
 
@@ -260,13 +268,12 @@ public class CanvasControl : SKElement
             {
                 IsAntialias = true,
                 BlendMode = paint.BlendMode,
-
                 ColorFilter = SKColorFilter.CreateBlendMode(
                     paint.Color,
                     SKBlendMode.SrcIn)
             };
 
-            canvas.DrawBitmap(ActiveBrushTip, dest, bitmapPaint);
+            canvas.DrawBitmap(brushTip, dest, bitmapPaint);
         }
         else
         {
@@ -275,7 +282,7 @@ public class CanvasControl : SKElement
     }
     
     
-    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing)
+    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing, SKBitmap? brushTip = null)
     {
         if (points == null || points.Count == 0)
             return;
@@ -283,8 +290,8 @@ public class CanvasControl : SKElement
         float radius = brushSize / 2f;
         SKPoint lastDab = points[0];
 
-        float fixedSpacing = brushSize * spacing;
-        DrawDab(canvas, lastDab, paint, brushSize);
+        float actualSpacing = brushSize * spacing;
+        DrawDab(canvas, lastDab, paint, brushSize, brushTip);
 
         for (int i = 1; i < points.Count; i++)
         {
@@ -292,20 +299,19 @@ public class CanvasControl : SKElement
             var p1 = points[i];
 
             float distance = SKPoint.Distance(p0, p1);
-            int steps = Math.Max(1, (int)(distance / fixedSpacing));
+            int steps = Math.Max(1, (int)(distance / actualSpacing));
 
             for (int j = 1; j <= steps; j++)
             {
                 float t = j / (float)steps;
-
                 var pos = new SKPoint(
                     p0.X + (p1.X - p0.X) * t,
                     p0.Y + (p1.Y - p0.Y) * t
                 );
 
-                if (SKPoint.Distance(lastDab, pos) >= fixedSpacing)
+                if (SKPoint.Distance(lastDab, pos) >= actualSpacing)
                 {
-                    DrawDab(canvas, pos, paint, brushSize);
+                    DrawDab(canvas, pos, paint, brushSize, brushTip);
                     lastDab = pos;
                 }
             }
