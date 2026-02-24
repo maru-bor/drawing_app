@@ -202,7 +202,12 @@ public class CanvasControl : SKElement
             if (!layer.Visible)
                 continue;
 
-            canvas.DrawBitmap(layer.Bitmap, 0, 0);
+            using var paint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
+            };
+
+            canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
         }
     }
     public void Undo()

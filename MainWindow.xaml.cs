@@ -11,10 +11,6 @@ using System.Windows.Shapes;
 using SkiaSharp;
 
 namespace drawing_app;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     public MainWindow()
@@ -67,7 +63,23 @@ public partial class MainWindow : Window
     private void LayerList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (LayerList.SelectedIndex >= 0)
+        {
             DrawingCanvas.ActiveLayerIndex = LayerList.SelectedIndex;
+
+            if (LayerList.SelectedItem is Layer layer)
+                LayerOpacitySlider.Value = layer.Opacity;
+        }
+    }
+    
+    private void BrushList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (BrushList.SelectedItem is BrushPreset brush)
+        {
+            DrawingCanvas.ApplyBrushPreset(brush);
+            ThicknessSlider.Value = brush.Size;
+            OpacitySlider.Value = brush.Opacity;
+        }
+           
     }
     
     private void AddLayer_Click(object sender, RoutedEventArgs e)
@@ -82,15 +94,13 @@ public partial class MainWindow : Window
         LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
     }
     
-    private void BrushList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void LayerOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (BrushList.SelectedItem is BrushPreset brush)
+        if (LayerList.SelectedItem is Layer layer)
         {
-            DrawingCanvas.ApplyBrushPreset(brush);
-            ThicknessSlider.Value = brush.Size;
-            OpacitySlider.Value = brush.Opacity;
+            layer.Opacity = (float)e.NewValue;
+            DrawingCanvas.InvalidateVisual();
         }
-           
     }
     
     private void ImportBrush_Click(object sender, RoutedEventArgs e)
