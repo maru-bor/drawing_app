@@ -25,7 +25,13 @@ public partial class MainWindow : Window
             LayerList.ItemsSource = DrawingCanvas.Layers;
             LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
             BrushList.ItemsSource = BrushLibrary.DefaultBrushes;
-            BrushList.SelectedIndex = 0;
+            foreach (var imported in BrushStorage.LoadAll())
+            {
+                BrushLibrary.Add(imported);
+            }
+
+            if (BrushList.Items.Count > 0)
+                BrushList.SelectedIndex = 0;
         };
         WindowState = WindowState.Maximized;
     }
@@ -98,6 +104,21 @@ public partial class MainWindow : Window
         {
             BrushLibrary.Add(window.ResultBrush);
         }
+    }
+    
+    private void DeleteBrush_Click(object sender, RoutedEventArgs e)
+    {
+        if (BrushList.SelectedItem is not BrushPreset brush)
+            return;
+
+        if (!brush.IsImported)
+        {
+            MessageBox.Show("Default brushes cannot be deleted.");
+            return;
+        }
+
+        BrushStorage.DeleteBrush(brush);
+        BrushLibrary.Remove(brush);
     }
     
     private void Exit_Click(object sender, RoutedEventArgs e)

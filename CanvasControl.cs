@@ -192,26 +192,6 @@ public class CanvasControl : SKElement
         }
     }
     
-    private void DrawStrokeOnActiveLayer(List<SKPoint> stroke)
-    {
-        if (stroke.Count < 2)
-            return;
-
-        var layer = _layers[_activeLayerIndex];
-
-        using var canvas = new SKCanvas(layer.Bitmap);
-        using var paint = new SKPaint
-        {
-            IsAntialias = true,
-            StrokeCap = SKStrokeCap.Round,
-            Color = IsEraser
-                ? SKColors.Transparent
-                : BrushColor.WithAlpha(BrushOpacity),
-            BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
-        };
-
-        DrawSmoothStroke(canvas, stroke, paint, BrushThickness, BrushSpacing, ActiveBrushTip);
-    }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;

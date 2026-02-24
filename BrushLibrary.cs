@@ -15,7 +15,9 @@ public class BrushLibrary
                 Opacity = 255,
                 Spacing = 0.6f,
                 IsEraser = false,
-                BrushTip = null
+                BrushTip = null,
+                IsImported = false
+
             },
 
             new BrushPreset
@@ -25,7 +27,9 @@ public class BrushLibrary
                 Opacity = 255,
                 Spacing = 0.25f,
                 IsEraser = false,
-                BrushTip = null
+                BrushTip = null,
+                IsImported = false
+
             },
 
             new BrushPreset
@@ -35,7 +39,9 @@ public class BrushLibrary
                 Opacity = 80,
                 Spacing = 0.15f,
                 IsEraser = false,
-                BrushTip = null
+                BrushTip = null,
+                IsImported = false
+
             },
 
             new BrushPreset
@@ -45,7 +51,9 @@ public class BrushLibrary
                 Opacity = 180,
                 Spacing = 0.35f,
                 IsEraser = false,
-                BrushTip = null
+                BrushTip = null,
+                IsImported = false
+
             },
 
             new BrushPreset
@@ -55,12 +63,19 @@ public class BrushLibrary
                 Opacity = 255,
                 Spacing = 0.25f,
                 IsEraser = true,
-                BrushTip = null
+                BrushTip = null,
+                IsImported = false
             }
         };
     public static void Add(BrushPreset brush)
     {
         if (brush == null) return;
         DefaultBrushes.Add(brush);
+    }
+
+    public static void Remove(BrushPreset brush)
+    {
+        if (brush == null) return;
+        DefaultBrushes.Remove(brush);
     }
 }

@@ -57,9 +57,10 @@ public partial class ImportBrushWindow : Window
             Size = (float)SizeSlider.Value,
             Opacity = (byte)OpacitySlider.Value,
             Spacing = (float)SpacingSlider.Value,
-            BrushTip = _brushTip
+            BrushTip = _brushTip,
+            IsImported = true
         };
-
+        BrushStorage.SaveBrush(ResultBrush);
         DialogResult = true;
         Close();
     }
