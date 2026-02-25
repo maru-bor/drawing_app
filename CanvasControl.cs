@@ -95,7 +95,6 @@ public class CanvasControl : SKElement
 
         var layer = _layers[_activeLayerIndex];
 
-        layer.Bitmap.Dispose();
         if (_livePreviewBackup == null)
             return;
 
@@ -175,7 +174,6 @@ public class CanvasControl : SKElement
         int width = layer.Bitmap.Width;
         int height = layer.Bitmap.Height;
 
-        layer.Bitmap.Dispose();
         layer.Bitmap = new SKBitmap(width, height);
 
         using var canvas = new SKCanvas(layer.Bitmap);

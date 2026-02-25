@@ -13,7 +13,7 @@ public class BrushLibrary
                 Name = "Pencil",
                 Size = 2f,
                 Opacity = 255,
-                Spacing = 0.6f,
+                Spacing = 0.10f,
                 IsEraser = false,
                 BrushTip = null,
                 IsImported = false
@@ -36,8 +36,8 @@ public class BrushLibrary
             {
                 Name = "Soft Brush",
                 Size = 20f,
-                Opacity = 80,
-                Spacing = 0.15f,
+                Opacity = 60,
+                Spacing = 0.10f,
                 IsEraser = false,
                 BrushTip = null,
                 IsImported = false
@@ -49,7 +49,7 @@ public class BrushLibrary
                 Name = "Marker",
                 Size = 15f,
                 Opacity = 180,
-                Spacing = 0.35f,
+                Spacing = 0.10f,
                 IsEraser = false,
                 BrushTip = null,
                 IsImported = false

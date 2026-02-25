@@ -109,6 +109,8 @@ public partial class MainWindow : Window
         }
     }
     
+    
+    
     private void ImportBrush_Click(object sender, RoutedEventArgs e)
     {
         var window = new ImportBrushWindow
