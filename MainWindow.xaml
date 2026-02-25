@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
-        Title="MainWindow">
+        Title="Drawing App">
     <Grid>
         
         <Grid.RowDefinitions>
@@ -30,11 +30,13 @@
             </MenuItem>
             
             <MenuItem Header="Undo"
-                Click="Undo_Click"/>
+                      Command="{Binding UndoCommand}"
+                      InputGestureText="Ctrl+Z"/>
          
             
             <MenuItem Header="Redo"
-                Click="Redo_Click"/>
+                      Command="{Binding RedoCommand}"
+                      InputGestureText="Ctrl+Y"/>
           
 
         </Menu>

@@ -96,7 +96,10 @@ public class CanvasControl : SKElement
         var layer = _layers[_activeLayerIndex];
 
         layer.Bitmap.Dispose();
-        layer.Bitmap = _livePreviewBackup!.Copy();
+        if (_livePreviewBackup == null)
+            return;
+
+        layer.Bitmap = _livePreviewBackup.Copy();
 
         using var canvas = new SKCanvas(layer.Bitmap);
         using var paint = new SKPaint
