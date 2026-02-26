@@ -142,11 +142,13 @@ public partial class MainWindow : Window
             color.Alpha, color.Red, color.Green, color.Blue);
 
         DrawingCanvas.IsColorPicker = false; 
+        Mouse.OverrideCursor = null;
     }
     
     private void PickColor_Click(object sender, RoutedEventArgs e)
     {
         DrawingCanvas.IsColorPicker = true;
+        Mouse.OverrideCursor = Cursors.Cross;
     }
     
     private void Exit_Click(object sender, RoutedEventArgs e)

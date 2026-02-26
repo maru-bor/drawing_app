@@ -76,17 +76,19 @@
 
                 <Grid>
                     <xctk:ColorCanvas x:Name="ColorPicker"
-                                      Height="280"
+                                      Height="240"
                                       SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
 
                    
-                    <Button Content="🖉"
+                    <Button 
                             Width="32"
                             Height="32"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Margin="5"
-                            Click="PickColor_Click"/>
+                            Click="PickColor_Click">
+                        <Image Source="icons/eyedropper.png" Width="20"/>
+                    </Button>
                 </Grid>
 
                 <TextBlock Text="Brushes" Margin="5,10,5,5"/>

@@ -16,4 +16,9 @@
       <PackageReference Include="WPF.UI" Version="3.4.2.7" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="icons\eyedropper.png" />
+      <Resource Include="icons\eyedropper.png" />
+    </ItemGroup>
+
 </Project>
