@@ -21,6 +21,8 @@ public class CanvasControl : SKElement
     public bool IsEraser { get; set; } = false;
     public SKBitmap? ActiveBrushTip { get; set; }
     private SKBitmap? _livePreviewBackup;
+    public bool IsColorPicker { get; set; } = false;
+    public event Action<SKColor> ColorPicked;
 
     public CanvasControl()
     {
@@ -78,6 +80,28 @@ public class CanvasControl : SKElement
         {
             GetMousePosition(e)
         };
+        
+        if (IsColorPicker)
+        {
+            var point = GetMousePosition(e);
+
+            using var merged = GetMergedBitmap();
+            if (merged == null)
+                return;
+
+            int x = (int)point.X;
+            int y = (int)point.Y;
+
+            if (x >= 0 && x < merged.Width && y >= 0 && y < merged.Height)
+            {
+                var color = merged.GetPixel(x, y);
+
+                // Notify MainWindow about picked color
+                ColorPicked?.Invoke(color);
+            }
+
+            return;
+        }
 
         var layer = _layers[_activeLayerIndex];
         _livePreviewBackup?.Dispose();
@@ -302,5 +326,34 @@ public class CanvasControl : SKElement
                 }
             }
         }
+    }
+    
+    private SKBitmap GetMergedBitmap()
+    {
+        if (_layers.Count == 0)
+            return null;
+
+        int width = _layers[0].Bitmap.Width;
+        int height = _layers[0].Bitmap.Height;
+
+        var merged = new SKBitmap(width, height);
+
+        using var canvas = new SKCanvas(merged);
+        canvas.Clear(SKColors.Transparent);
+
+        foreach (var layer in _layers)
+        {
+            if (!layer.Visible)
+                continue;
+
+            using var paint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
+            };
+
+            canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
+        }
+
+        return merged;
     }
 }

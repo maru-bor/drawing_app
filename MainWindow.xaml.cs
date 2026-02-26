@@ -4,6 +4,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using SkiaSharp;
+using Xceed.Wpf.Toolkit;
+using MessageBox = System.Windows.MessageBox;
+using WindowState = System.Windows.WindowState;
 
 namespace drawing_app;
 public partial class MainWindow : Window
@@ -22,10 +25,12 @@ public partial class MainWindow : Window
         InputBindings.Add(new KeyBinding(UndoCommand, new KeyGesture(Key.Z, ModifierKeys.Control)));
         InputBindings.Add(new KeyBinding(RedoCommand, new KeyGesture(Key.Y, ModifierKeys.Control)));
         
+        DrawingCanvas.ColorPicked += OnColorPicked;
         Loaded += (_, __) =>
         {
             LayerList.ItemsSource = DrawingCanvas.Layers;
             LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
+            
             BrushList.ItemsSource = BrushLibrary.DefaultBrushes;
             foreach (var imported in BrushStorage.LoadAll())
             {
@@ -36,16 +41,6 @@ public partial class MainWindow : Window
                 BrushList.SelectedIndex = 0;
         };
         WindowState = WindowState.Maximized;
-    }
-    
-    private void Undo_Click(object sender, RoutedEventArgs e)
-    {
-        DrawingCanvas.Undo();
-    }
-
-    private void Redo_Click(object sender, RoutedEventArgs e)
-    {
-        DrawingCanvas.Redo();
     }
     
     private void ThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -137,6 +132,21 @@ public partial class MainWindow : Window
 
         BrushStorage.DeleteBrush(brush);
         BrushLibrary.Remove(brush);
+    }
+    
+    private void OnColorPicked(SKColor color)
+    {
+        DrawingCanvas.BrushColor = color;
+
+        ColorPicker.SelectedColor = Color.FromArgb(
+            color.Alpha, color.Red, color.Green, color.Blue);
+
+        DrawingCanvas.IsColorPicker = false; 
+    }
+    
+    private void PickColor_Click(object sender, RoutedEventArgs e)
+    {
+        DrawingCanvas.IsColorPicker = true;
     }
     
     private void Exit_Click(object sender, RoutedEventArgs e)

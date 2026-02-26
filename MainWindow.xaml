@@ -74,11 +74,20 @@
                 BorderThickness="0,0,1,0">
             <StackPanel>
 
-                <xctk:ColorCanvas
-                    Width="300"
-                    Height="280"
-                    Margin="5"
-                    SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
+                <Grid>
+                    <xctk:ColorCanvas x:Name="ColorPicker"
+                                      Height="280"
+                                      SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
+
+                   
+                    <Button Content="🖉"
+                            Width="32"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="5"
+                            Click="PickColor_Click"/>
+                </Grid>
 
                 <TextBlock Text="Brushes" Margin="5,10,5,5"/>
 
