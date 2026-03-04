@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
-        Title="Drawing App">
+        Title="SimpleART">
     <Grid>
         
         <Grid.RowDefinitions>
@@ -58,11 +58,19 @@
                         Margin="340,20, 240, 20"
                 >
 
-                <local:CanvasControl x:Name="DrawingCanvas"
-                                     Width="1100"
-                                     Height="800"
-                                     HorizontalAlignment="Left"
-                                     VerticalAlignment="Top"/>
+                    <local:CanvasControl x:Name="DrawingCanvas"
+                                         Width="1100"
+                                         Height="800"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Top">
+
+                        <local:CanvasControl.LayoutTransform>
+                            <ScaleTransform x:Name="CanvasScaleTransform"
+                                            ScaleX="1"
+                                            ScaleY="1"/>
+                        </local:CanvasControl.LayoutTransform>
+
+                    </local:CanvasControl>
             </Border>
             </ScrollViewer>
 
@@ -127,35 +135,88 @@
 
 
         <Border Width="220"
-                Background="#F3F3F3"
-                HorizontalAlignment="Right"
-                BorderBrush="#CCC"
-                BorderThickness="1,0,0,0"
-                Padding="10">
+        Background="#F3F3F3"
+        HorizontalAlignment="Right"
+        BorderBrush="#CCC"
+        BorderThickness="1,0,0,0"
+        Padding="10">
 
-            <StackPanel>
-                <TextBlock Text="Layers" FontWeight="Bold" Margin="0,0,0,10"/>
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>     
+            <RowDefinition Height="Auto"/>  
+        </Grid.RowDefinitions>
 
-                <ListBox x:Name="LayerList"
-                         DisplayMemberPath="Name"
-                         SelectionChanged="LayerList_SelectionChanged"
-                         Height="300"/>
+        <StackPanel Grid.Row="0">
 
-                <TextBlock Text="Layer Opacity:" Margin="0,10,0,0"/>
+            <TextBlock Text="Layers" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Slider x:Name="LayerOpacitySlider"
-                        Minimum="0"
-                        Maximum="1"
-                        Value="1"
-                        TickFrequency="0.01"
-                        Margin="0,0,0,10"
-                        ValueChanged="LayerOpacitySlider_ValueChanged"/>
+            <ListBox x:Name="LayerList"
+                     DisplayMemberPath="Name"
+                     SelectionChanged="LayerList_SelectionChanged"
+                     Height="300"/>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="＋" Width="40" Height="40" Margin="5" Click="AddLayer_Click"/>
-                    <Button Content="🗑" Width="40" Height="40" Margin="5" Click="DeleteLayer_Click"/>
-                </StackPanel>
+            <TextBlock Text="Layer Opacity:" Margin="0,10,0,0"/>
+
+            <Slider x:Name="LayerOpacitySlider"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="1"
+                    TickFrequency="0.01"
+                    Margin="0,0,0,10"
+                    ValueChanged="LayerOpacitySlider_ValueChanged"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Width="40" Height="40" Margin="5" Click="AddLayer_Click">
+                    <Image Source="/icons/plus.png" Width="20"/>
+                </Button>
+                <Button Width="40" Height="40" Margin="5" Click="DeleteLayer_Click">
+                    <Image Source="/icons/trash.png" Width="20"/>
+                </Button>
             </StackPanel>
+
+        </StackPanel>
+
+     
+        <StackPanel Grid.Row="1"
+                    Margin="0,20,0,0"
+                    VerticalAlignment="Bottom">
+
+                <Separator Margin="0,10"/>
+
+                <TextBlock Text="Zoom"
+                           HorizontalAlignment="Center"
+                           Margin="0,5"/>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+
+                    <Button Width="25" 
+                            Height="25"
+                            Click="ZoomOut_Click">
+                        <Image Source="/icons/zoomout.png" Width="20"/>
+                    </Button>
+
+                    <Slider x:Name="ZoomSlider"
+                            Minimum="0.25"
+                            Maximum="4"
+                            Value="1"
+                            Width="120"
+                            Margin="5,0"
+                            ValueChanged="ZoomSlider_ValueChanged"/>
+
+                    <Button Width="25" 
+                            Height="25"
+                            Click="ZoomIn_Click">
+                        <Image Source="/icons/zoomin.png" Width="20"/>
+                    </Button>
+
+                </StackPanel>
+
+        </StackPanel>
+
+        </Grid>
 
         </Border>
 

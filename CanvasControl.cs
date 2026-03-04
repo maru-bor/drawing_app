@@ -96,8 +96,7 @@ public class CanvasControl : SKElement
             {
                 var color = merged.GetPixel(x, y);
 
-                // Notify MainWindow about picked color
-                ColorPicked?.Invoke(color);
+                ColorPicked.Invoke(color);
             }
 
             return;
