@@ -4,42 +4,102 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
-        Title="Import New Brush" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
-    <StackPanel Margin="12" VerticalAlignment="Top">
+        Title="Import New Brush"
+        Height="450"
+        Width="700"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
 
-        <TextBlock Text="Brush Name" />
-        <TextBox x:Name="NameBox" Margin="0,4,0,8"/>
+    <Grid Margin="16">
 
-        <TextBlock Text="Thickness" />
-        <Slider x:Name="SizeSlider" Minimum="1" Maximum="100" Value="10"/>
         
-        <TextBlock Text="Opacity" Margin="0,8,0,0"/>
-        <Slider x:Name="OpacitySlider" Minimum="1" Maximum="255" Value="255"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <TextBlock Text="Spacing" Margin="0,8,0,0"/>
-        <Slider x:Name="SpacingSlider" Minimum="0.05" Maximum="1" Value="0.25"/>
+   
+        <Grid Grid.Row="0">
 
-        <Button Content="Choose Brush Image"
-                Margin="0,12,0,0"
-                Click="OnChooseImage"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*"/>  
+                <ColumnDefinition Width="1.8*"/>  
+            </Grid.ColumnDefinitions>
+            
+            <Border Grid.Column="0"
+                    BorderBrush="#DDD"
+                    BorderThickness="1"
+                    Padding="10"
+                    Margin="0,0,15,0">
 
-        <Image x:Name="PreviewImage"
-               Height="100"
-               Margin="0,8,0,0"
-               Stretch="Uniform"/>
+                <StackPanel>
+                    <TextBlock Text="Brush Preview"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,8"/>
 
-        <StackPanel Orientation="Horizontal"
+                    <Button Content="Choose Brush Image"
+                            Margin="0,0,0,10"
+                            Click="OnChooseImage"/>
+
+                    <Border BorderBrush="#CCC"
+                            BorderThickness="1"
+                            Background="#F8F8F8"
+                            Height="200">
+
+                        <Image x:Name="PreviewImage"
+                               Stretch="Uniform"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="1">
+
+                <TextBlock Text="Brush Name"/>
+                <TextBox x:Name="NameBox"
+                         Margin="0,4,0,12"/>
+
+                <TextBlock Text="Thickness"/>
+                <Slider x:Name="SizeSlider"
+                        Minimum="1"
+                        Maximum="100"
+                        Value="10"
+                        Margin="0,4,0,12"/>
+
+                <TextBlock Text="Opacity"/>
+                <Slider x:Name="OpacitySlider"
+                        Minimum="1"
+                        Maximum="255"
+                        Value="255"
+                        Margin="0,4,0,12"/>
+
+                <TextBlock Text="Spacing"/>
+                <Slider x:Name="SpacingSlider"
+                        Minimum="0.05"
+                        Maximum="1"
+                        Value="0.25"
+                        Margin="0,4,0,0"/>
+
+            </StackPanel>
+
+        </Grid>
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right"
-                    Margin="0,16,0,0">
+                    Margin="0,20,0,0">
+
             <Button Content="Cancel"
-                    Width="80"
-                    Margin="0,0,8,0"
+                    Width="90"
+                    Height="32"
+                    Margin="0,0,15,0"
                     Click="OnCancel"/>
+
             <Button Content="Save"
-                    Width="80"
+                    Width="90"
+                    Height="32"
                     Click="OnSave"/>
+
         </StackPanel>
 
-    </StackPanel>
+    </Grid>
 </Window>

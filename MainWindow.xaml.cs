@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Microsoft.Win32;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -15,6 +17,8 @@ public partial class MainWindow : Window
     public ICommand RedoCommand { get; }
     
     public double CurrentZoom => ZoomSlider?.Value ?? 1.0;
+    
+    private string? _currentFilePath;
     public MainWindow()
     {
         InitializeComponent();
@@ -24,6 +28,7 @@ public partial class MainWindow : Window
         
         DataContext = this;
         
+        Closing += MainWindow_Closing;
         InputBindings.Add(new KeyBinding(UndoCommand, new KeyGesture(Key.Z, ModifierKeys.Control)));
         InputBindings.Add(new KeyBinding(RedoCommand, new KeyGesture(Key.Y, ModifierKeys.Control)));
         
@@ -171,12 +176,99 @@ public partial class MainWindow : Window
     {
         ZoomSlider.Value = Math.Max(ZoomSlider.Value - 0.1, ZoomSlider.Minimum);
     }
+    private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_currentFilePath))
+        {
+            SaveCanvasToFile(_currentFilePath);
+        }
+        else
+        {
+            SaveAs_Click(sender, e);
+        }
+    }
 
+    private void SaveAs_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new SaveFileDialog
+        {
+            Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp",
+            DefaultExt = "png",
+            FileName = "drawing.png"
+        };
 
+        if (dlg.ShowDialog() == true)
+        {
+            _currentFilePath = dlg.FileName;
+            SaveCanvasToFile(_currentFilePath);
+        }
+    }
+
+   
+    private void SaveCanvasToFile(string path)
+    {
+        if (DrawingCanvas.Layers.Count == 0)
+            return;
+
+        int width = DrawingCanvas.Layers[0].Bitmap.Width;
+        int height = DrawingCanvas.Layers[0].Bitmap.Height;
+
+        using var combinedBitmap = new SKBitmap(width, height);
+        using var canvas = new SKCanvas(combinedBitmap);
+        canvas.Clear(SKColors.White);
+
+        foreach (var layer in DrawingCanvas.Layers)
+        {
+            if (!layer.Visible) 
+                continue;
+
+            using var paint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
+            };
+
+            canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
+        }
+
+        using var image = SKImage.FromBitmap(combinedBitmap);
+        using var data = image.Encode(GetSkEncodedImageFormat(path), 100);
+
+        using var stream = File.OpenWrite(path);
+        data.SaveTo(stream);
+    }
+    
+    private SKEncodedImageFormat GetSkEncodedImageFormat(string path)
+    {
+        var ext = Path.GetExtension(path).ToLower();
+        return ext switch
+        {
+            ".jpg" or ".jpeg" => SKEncodedImageFormat.Jpeg,
+            ".bmp" => SKEncodedImageFormat.Bmp,
+            _ => SKEncodedImageFormat.Png,
+        };
+    }
+    
+    private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        var result = MessageBox.Show(
+            "Do you want to save your drawing before exiting?",
+            "Exit",
+            MessageBoxButton.YesNoCancel,
+            MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            Save_Click(null, null);
+        }
+        else if (result == MessageBoxResult.Cancel)
+        {
+            e.Cancel = true;
+        }
+    }
     
     private void Exit_Click(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
+        Close();
     }
 
 }

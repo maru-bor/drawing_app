@@ -20,8 +20,9 @@
               FontSize="14">
 
             <MenuItem Header="File">
-                <MenuItem Header="Exit"
-                          Click="Exit_Click"/>
+                <MenuItem Header="Save" Click="Save_Click" />
+                <MenuItem Header="Save As..." Click="SaveAs_Click" />
+                <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
 
             <MenuItem Header="Import">
