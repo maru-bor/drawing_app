@@ -290,16 +290,37 @@ public partial class MainWindow : Window
 
         if (result == MessageBoxResult.Yes)
             Save_Click(null, null);
-
-        CreateNewCanvas(dialog.CanvasWidth, dialog.CanvasHeight);
+        
+        DrawingCanvas.Width = dialog.CanvasWidth;
+        DrawingCanvas.Height = dialog.CanvasHeight;
+        
+        DrawingCanvas.NewCanvas(dialog.CanvasWidth, dialog.CanvasHeight);
+        
+        LayerList.SelectedIndex = 0;
     }
     
     private void CreateNewCanvas(int width, int height)
     {
-        DrawingCanvas.Width = width;
-        DrawingCanvas.Height = height;
-
-        DrawingCanvas.Clear(); 
+        try
+        {
+            //DrawingCanvas.ClearAndResize(width, height);
+        
+           
+            LayerList.Items.Refresh();
+            if (DrawingCanvas.Layers.Count > 0)
+            {
+                LayerList.SelectedIndex = 0;
+            }
+        
+            ZoomSlider.Value = 1.0;
+            _currentFilePath = null;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error creating new canvas: {ex.Message}", "Error", 
+                     MessageBoxButton.OK, 
+                MessageBoxImage.Error);
+        }
     }
     
     private void Exit_Click(object sender, RoutedEventArgs e)

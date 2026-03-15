@@ -63,8 +63,8 @@
                 >
 
                     <local:CanvasControl x:Name="DrawingCanvas"
-                                         Width="1100"
-                                         Height="800"
+                                         Width="1120"
+                                         Height="810"
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Top">
 

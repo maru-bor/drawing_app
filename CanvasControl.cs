@@ -209,15 +209,14 @@ public class CanvasControl : SKElement
             layer.Bitmap.Dispose();
         }
         _layers.Clear();
-    
+
        
-        _layers.Add(new Layer(width, height, "Layer 1"));
+        var baseLayer = new Layer(width, height, "Layer 1");
+        _layers.Add(baseLayer);
         _activeLayerIndex = 0;
-    
-        Width = width;
-        Height = height;
-    
+
         InvalidateVisual();
+        InvalidateMeasure();
     }
     
     private void RebuildLayerBitmap(Layer layer)
