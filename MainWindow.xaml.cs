@@ -179,7 +179,7 @@ public partial class MainWindow : Window
     {
         ZoomSlider.Value = Math.Max(ZoomSlider.Value - 0.1, ZoomSlider.Minimum);
     }
-    private void Save_Click(object sender, RoutedEventArgs e)
+    private void Save_Click(object? sender, RoutedEventArgs? e)
     {
         if (!string.IsNullOrEmpty(_currentFilePath))
         {
@@ -271,14 +271,6 @@ public partial class MainWindow : Window
     
     private void NewCanvas_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new NewCanvasWindow
-        {
-            Owner = this
-        };
-
-        if (dialog.ShowDialog() != true)
-            return;
-
         var result = MessageBox.Show(
             "Do you want to save the current drawing?",
             "New Canvas",
@@ -291,37 +283,18 @@ public partial class MainWindow : Window
         if (result == MessageBoxResult.Yes)
             Save_Click(null, null);
         
-        DrawingCanvas.Width = dialog.CanvasWidth;
-        DrawingCanvas.Height = dialog.CanvasHeight;
         
-        DrawingCanvas.NewCanvas(dialog.CanvasWidth, dialog.CanvasHeight);
-        
+        const int defaultWidth = 1120;
+        const int defaultHeight = 810;
+
+        DrawingCanvas.NewCanvas(defaultWidth, defaultHeight);
+
         LayerList.SelectedIndex = 0;
+
+        ZoomSlider.Value = 1.0;
+        _currentFilePath = null;
     }
     
-    private void CreateNewCanvas(int width, int height)
-    {
-        try
-        {
-            //DrawingCanvas.ClearAndResize(width, height);
-        
-           
-            LayerList.Items.Refresh();
-            if (DrawingCanvas.Layers.Count > 0)
-            {
-                LayerList.SelectedIndex = 0;
-            }
-        
-            ZoomSlider.Value = 1.0;
-            _currentFilePath = null;
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error creating new canvas: {ex.Message}", "Error", 
-                     MessageBoxButton.OK, 
-                MessageBoxImage.Error);
-        }
-    }
     
     private void Exit_Click(object sender, RoutedEventArgs e)
     {

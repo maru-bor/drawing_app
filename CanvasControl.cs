@@ -11,7 +11,7 @@ public class CanvasControl : SKElement
 {
     private ObservableCollection<Layer> _layers = new();
     private int _activeLayerIndex;
-    private List<SKPoint> _currentStroke = new();
+    private List<SKPoint>? _currentStroke = new();
     public ObservableCollection<Layer> Layers => _layers;
     
     public float BrushThickness { get; set; } = 4f;
@@ -210,13 +210,23 @@ public class CanvasControl : SKElement
         }
         _layers.Clear();
 
-       
-        var baseLayer = new Layer(width, height, "Layer 1");
-        _layers.Add(baseLayer);
+      
+        _layers.Add(new Layer(width, height, "Layer 1"));
         _activeLayerIndex = 0;
 
-        InvalidateVisual();
+    
+        var dpi = VisualTreeHelper.GetDpi(this);
+        double dipWidth = width / dpi.DpiScaleX;
+        double dipHeight = height / dpi.DpiScaleY;
+
+        
+        Width = dipWidth;
+        Height = dipHeight;
+
+       
         InvalidateMeasure();
+        UpdateLayout();
+        InvalidateVisual();
     }
     
     private void RebuildLayerBitmap(Layer layer)
@@ -231,13 +241,11 @@ public class CanvasControl : SKElement
 
         foreach (var stroke in layer.UndoStack.Reverse())
         {
-            using var paint = new SKPaint
-            {
-                IsAntialias = true,
-                StrokeCap = SKStrokeCap.Round,
-                Color = stroke.IsEraser ? SKColors.Transparent : stroke.Color.WithAlpha(stroke.Opacity),
-                BlendMode = stroke.IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
-            };
+            using var paint = new SKPaint();
+            paint.IsAntialias = true;
+            paint.StrokeCap = SKStrokeCap.Round;
+            paint.Color = stroke.IsEraser ? SKColors.Transparent : stroke.Color.WithAlpha(stroke.Opacity);
+            paint.BlendMode = stroke.IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver;
 
             DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness, stroke.Spacing, stroke.BrushTip);
         }
@@ -301,14 +309,12 @@ public class CanvasControl : SKElement
                 position.Y + half
             );
 
-            using var bitmapPaint = new SKPaint
-            {
-                IsAntialias = true,
-                BlendMode = paint.BlendMode,
-                ColorFilter = SKColorFilter.CreateBlendMode(
-                    paint.Color,
-                    SKBlendMode.SrcIn)
-            };
+            using var bitmapPaint = new SKPaint();
+            bitmapPaint.IsAntialias = true;
+            bitmapPaint.BlendMode = paint.BlendMode;
+            bitmapPaint.ColorFilter = SKColorFilter.CreateBlendMode(
+                paint.Color,
+                SKBlendMode.SrcIn);
 
             canvas.DrawBitmap(brushTip, dest, bitmapPaint);
         }
@@ -384,20 +390,21 @@ public class CanvasControl : SKElement
         return merged;
     }
     
-    public void Clear()
-    {
-        Layers.Clear();
-
-        var bitmap = new SKBitmap((int)Width, (int)Height);
-        using (var canvas = new SKCanvas(bitmap))
-        {
-            canvas.Clear(SKColors.Transparent);
-        }
-
-        
-
-        ActiveLayerIndex = 0;
-
-        InvalidateVisual();
-    }
+    
+    // public void Clear()
+    // {
+    //     Layers.Clear();
+    //
+    //     var bitmap = new SKBitmap((int)Width, (int)Height);
+    //     using (var canvas = new SKCanvas(bitmap))
+    //     {
+    //         canvas.Clear(SKColors.Transparent);
+    //     }
+    //
+    //     
+    //
+    //     ActiveLayerIndex = 0;
+    //
+    //     InvalidateVisual();
+    // }
 }
