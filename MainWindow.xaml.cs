@@ -164,6 +164,9 @@ public partial class MainWindow : Window
         {
             CanvasScaleTransform.ScaleX = e.NewValue;
             CanvasScaleTransform.ScaleY = e.NewValue;
+            
+            CanvasScaleTransform.CenterX = DrawingCanvas.Width / 2;
+            CanvasScaleTransform.CenterY = DrawingCanvas.Height / 2;
         }
     }
     
@@ -264,6 +267,39 @@ public partial class MainWindow : Window
         {
             e.Cancel = true;
         }
+    }
+    
+    private void NewCanvas_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new NewCanvasWindow
+        {
+            Owner = this
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        var result = MessageBox.Show(
+            "Do you want to save the current drawing?",
+            "New Canvas",
+            MessageBoxButton.YesNoCancel,
+            MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Cancel)
+            return;
+
+        if (result == MessageBoxResult.Yes)
+            Save_Click(null, null);
+
+        CreateNewCanvas(dialog.CanvasWidth, dialog.CanvasHeight);
+    }
+    
+    private void CreateNewCanvas(int width, int height)
+    {
+        DrawingCanvas.Width = width;
+        DrawingCanvas.Height = height;
+
+        DrawingCanvas.Clear(); 
     }
     
     private void Exit_Click(object sender, RoutedEventArgs e)

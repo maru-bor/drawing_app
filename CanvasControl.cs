@@ -23,6 +23,7 @@ public class CanvasControl : SKElement
     private SKBitmap? _livePreviewBackup;
     public bool IsColorPicker { get; set; } = false;
     public event Action<SKColor> ColorPicked;
+    public float Zoom { get; set; } = 1f;
 
     public CanvasControl()
     {
@@ -67,8 +68,13 @@ public class CanvasControl : SKElement
     private SKPoint GetMousePosition(MouseEventArgs e)
     {
         var pos = e.GetPosition(this);
-        double dpiScale = VisualTreeHelper.GetDpi(this).DpiScaleX; 
-        return new SKPoint((float)(pos.X * dpiScale), (float)(pos.Y * dpiScale));
+
+        double dpiScale = VisualTreeHelper.GetDpi(this).DpiScaleX;
+
+        float x = (float)(pos.X * dpiScale / Zoom);
+        float y = (float)(pos.Y * dpiScale / Zoom);
+
+        return new SKPoint(x, y);
     }
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -169,6 +175,9 @@ public class CanvasControl : SKElement
     
     public void AddLayer()
     {
+        if (_layers.Count == 0)
+            return;
+        
         var baseLayer = _layers[0];
         var newLayer = new Layer(baseLayer.Bitmap.Width, baseLayer.Bitmap.Height,
             $"Layer {_layers.Count + 1}");
@@ -189,6 +198,25 @@ public class CanvasControl : SKElement
         if (_activeLayerIndex >= _layers.Count)
             _activeLayerIndex = _layers.Count - 1;
 
+        InvalidateVisual();
+    }
+    
+    public void NewCanvas(int width, int height)
+    {
+        
+        foreach (var layer in _layers)
+        {
+            layer.Bitmap.Dispose();
+        }
+        _layers.Clear();
+    
+       
+        _layers.Add(new Layer(width, height, "Layer 1"));
+        _activeLayerIndex = 0;
+    
+        Width = width;
+        Height = height;
+    
         InvalidateVisual();
     }
     
@@ -220,6 +248,7 @@ public class CanvasControl : SKElement
     {
         var canvas = e.Surface.Canvas;
         canvas.Clear(SKColors.White);
+        canvas.Scale(Zoom);
 
         foreach (var layer in _layers)
         {
@@ -354,5 +383,22 @@ public class CanvasControl : SKElement
         }
 
         return merged;
+    }
+    
+    public void Clear()
+    {
+        Layers.Clear();
+
+        var bitmap = new SKBitmap((int)Width, (int)Height);
+        using (var canvas = new SKCanvas(bitmap))
+        {
+            canvas.Clear(SKColors.Transparent);
+        }
+
+        
+
+        ActiveLayerIndex = 0;
+
+        InvalidateVisual();
     }
 }
