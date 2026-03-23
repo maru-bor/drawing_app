@@ -13,7 +13,7 @@ public class CanvasControl : SKElement
     private int _activeLayerIndex;
     private List<SKPoint>? _currentStroke = new();
     public ObservableCollection<Layer> Layers => _layers;
-    
+
     public float BrushThickness { get; set; } = 4f;
     public byte BrushOpacity { get; set; } = 255;
     public SKColor BrushColor { get; set; } = new SKColor(0, 0, 0);
@@ -27,14 +27,14 @@ public class CanvasControl : SKElement
 
     public CanvasControl()
     {
-       
+
         MouseDown += OnMouseDown;
         MouseMove += OnMouseMove;
         MouseUp += OnMouseUp;
         SizeChanged += (_, __) => InvalidateVisual();
         Loaded += (_, __) => InitializeBaseLayer();
     }
-    
+
     private void InitializeBaseLayer()
     {
         if (_layers.Count > 0)
@@ -46,7 +46,7 @@ public class CanvasControl : SKElement
         _layers.Add(new Layer(width, height, "Layer 1"));
         _activeLayerIndex = 0;
     }
-    
+
     public int ActiveLayerIndex
     {
         get => _activeLayerIndex;
@@ -56,7 +56,7 @@ public class CanvasControl : SKElement
                 _activeLayerIndex = value;
         }
     }
-    
+
     public void ApplyBrushPreset(BrushPreset brush)
     {
         BrushThickness = brush.Size;
@@ -65,6 +65,7 @@ public class CanvasControl : SKElement
         IsEraser = brush.IsEraser;
         ActiveBrushTip = brush.BrushTip;
     }
+
     private SKPoint GetMousePosition(MouseEventArgs e)
     {
         var pos = e.GetPosition(this);
@@ -86,7 +87,7 @@ public class CanvasControl : SKElement
         {
             GetMousePosition(e)
         };
-        
+
         if (IsColorPicker)
         {
             var point = GetMousePosition(e);
@@ -115,7 +116,7 @@ public class CanvasControl : SKElement
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        
+
         if (_currentStroke == null || e.LeftButton != MouseButtonState.Pressed)
             return;
 
@@ -172,12 +173,12 @@ public class CanvasControl : SKElement
         _livePreviewBackup?.Dispose();
         _livePreviewBackup = null;
     }
-    
+
     public void AddLayer()
     {
         if (_layers.Count == 0)
             return;
-        
+
         var baseLayer = _layers[0];
         var newLayer = new Layer(baseLayer.Bitmap.Width, baseLayer.Bitmap.Height,
             $"Layer {_layers.Count + 1}");
@@ -191,7 +192,7 @@ public class CanvasControl : SKElement
     public void DeleteActiveLayer()
     {
         if (_layers.Count <= 1)
-            return; 
+            return;
 
         _layers.RemoveAt(_activeLayerIndex);
 
@@ -200,35 +201,36 @@ public class CanvasControl : SKElement
 
         InvalidateVisual();
     }
-    
+
     public void NewCanvas(int width, int height)
     {
-        
+
         foreach (var layer in _layers)
         {
             layer.Bitmap.Dispose();
         }
+
         _layers.Clear();
 
-      
+
         _layers.Add(new Layer(width, height, "Layer 1"));
         _activeLayerIndex = 0;
 
-    
+
         var dpi = VisualTreeHelper.GetDpi(this);
         double dipWidth = width / dpi.DpiScaleX;
         double dipHeight = height / dpi.DpiScaleY;
 
-        
+
         Width = dipWidth;
         Height = dipHeight;
 
-       
+
         InvalidateMeasure();
         UpdateLayout();
         InvalidateVisual();
     }
-    
+
     private void RebuildLayerBitmap(Layer layer)
     {
         int width = layer.Bitmap.Width;
@@ -250,13 +252,26 @@ public class CanvasControl : SKElement
             DrawSmoothStroke(canvas, stroke.Points, paint, stroke.Thickness, stroke.Spacing, stroke.BrushTip);
         }
     }
-    
+
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
         canvas.Clear(SKColors.White);
-        canvas.Scale(Zoom);
 
+        if (_layers.Count == 0)
+            return;
+
+        var bitmap = _layers[0].Bitmap;
+
+        float canvasWidth = bitmap.Width * Zoom;
+        float canvasHeight = bitmap.Height * Zoom;
+
+        float offsetX = (e.Info.Width - canvasWidth) / 2f;
+        float offsetY = (e.Info.Height - canvasHeight) / 2f;
+
+        canvas.Translate(offsetX, offsetY);
+        canvas.Scale(Zoom);
+        
         foreach (var layer in _layers)
         {
             if (!layer.Visible)
@@ -264,12 +279,13 @@ public class CanvasControl : SKElement
 
             using var paint = new SKPaint
             {
-                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
+                Color = new SKColor(255,255,255,(byte)(255 * layer.Opacity))
             };
 
             canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
         }
     }
+
     public void Undo()
     {
         var layer = _layers[_activeLayerIndex];
@@ -282,7 +298,7 @@ public class CanvasControl : SKElement
         InvalidateVisual();
     }
 
-    
+
 
     public void Redo()
     {
@@ -295,7 +311,7 @@ public class CanvasControl : SKElement
         RebuildLayerBitmap(layer);
         InvalidateVisual();
     }
-    
+
     private void DrawDab(SKCanvas canvas, SKPoint position, SKPaint paint, float size, SKBitmap? brushTip)
     {
         if (brushTip != null)
@@ -323,9 +339,10 @@ public class CanvasControl : SKElement
             canvas.DrawCircle(position, size / 2f, paint);
         }
     }
-    
-    
-    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing, SKBitmap? brushTip = null)
+
+
+    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing,
+        SKBitmap? brushTip = null)
     {
         if (points == null || points.Count == 0)
             return;
@@ -360,7 +377,7 @@ public class CanvasControl : SKElement
             }
         }
     }
-    
+
     private SKBitmap GetMergedBitmap()
     {
         if (_layers.Count == 0)
@@ -389,22 +406,4 @@ public class CanvasControl : SKElement
 
         return merged;
     }
-    
-    
-    // public void Clear()
-    // {
-    //     Layers.Clear();
-    //
-    //     var bitmap = new SKBitmap((int)Width, (int)Height);
-    //     using (var canvas = new SKCanvas(bitmap))
-    //     {
-    //         canvas.Clear(SKColors.Transparent);
-    //     }
-    //
-    //     
-    //
-    //     ActiveLayerIndex = 0;
-    //
-    //     InvalidateVisual();
-    // }
-}
+}    

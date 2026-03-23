@@ -159,6 +159,10 @@
             <ListBox x:Name="LayerList"
                      DisplayMemberPath="Name"
                      SelectionChanged="LayerList_SelectionChanged"
+                     PreviewMouseLeftButtonDown="LayerList_PreviewMouseLeftButtonDown"
+                     MouseMove="LayerList_MouseMove"
+                     AllowDrop="True"
+                     Drop="LayerList_Drop"
                      Height="300"/>
 
             <TextBlock Text="Layer Opacity:" Margin="0,10,0,0"/>

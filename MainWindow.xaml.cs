@@ -18,6 +18,9 @@ public partial class MainWindow : Window
     
     public double CurrentZoom => ZoomSlider?.Value ?? 1.0;
     
+    private Point _dragStartPoint;
+    private Layer _draggedLayer;
+    
     private string? _currentFilePath;
     public MainWindow()
     {
@@ -76,6 +79,60 @@ public partial class MainWindow : Window
 
             if (LayerList.SelectedItem is Layer layer)
                 LayerOpacitySlider.Value = layer.Opacity;
+        }
+    }
+    
+    private void LayerList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        _dragStartPoint = e.GetPosition(null);
+
+        var item = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject) as ListBoxItem;
+        if (item != null)
+        {
+            _draggedLayer = item.DataContext as Layer;
+        }
+    }
+    
+    private void LayerList_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton != MouseButtonState.Pressed || _draggedLayer == null)
+            return;
+
+        var currentPosition = e.GetPosition(null);
+
+        if (Math.Abs(currentPosition.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
+            Math.Abs(currentPosition.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+        {
+            DragDrop.DoDragDrop(LayerList, _draggedLayer, DragDropEffects.Move);
+        }
+    }
+    
+    private void LayerList_Drop(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(typeof(Layer)))
+            return;
+
+        var droppedLayer = e.Data.GetData(typeof(Layer)) as Layer;
+
+        var targetItem = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject) as ListBoxItem;
+        if (targetItem == null)
+            return;
+
+        var targetLayer = targetItem.DataContext as Layer;
+
+        var layers = DrawingCanvas.Layers;
+
+        int oldIndex = layers.IndexOf(droppedLayer);
+        int newIndex = layers.IndexOf(targetLayer);
+
+        if (oldIndex != newIndex)
+        {
+            layers.Move(oldIndex, newIndex);
+            LayerList.SelectedIndex = newIndex;
+
+            // IMPORTANT: keep active layer in sync
+            DrawingCanvas.ActiveLayerIndex = newIndex;
+            DrawingCanvas.InvalidateVisual();
         }
     }
     
