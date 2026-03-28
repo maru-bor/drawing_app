@@ -4,7 +4,7 @@
 
 # SimpleART
 
-SimpleART is desktop drawing application for Windows built with C#, WPF and SkiaSharp mainly aimed at beginner artists and anyone who prefers simplified drawing software. It provides all the basic digital drawing features listed below. It aims to be the middle ground between very simple and overly complex drawing applications. 
+SimpleART is a desktop drawing application for Windows built with C#, WPF and SkiaSharp mainly aimed at beginner artists and anyone who prefers simplified drawing software. It provides all the basic digital drawing features listed below. It aims to be the middle ground between very simple and overly complex drawing applications. 
 
 ---
 
