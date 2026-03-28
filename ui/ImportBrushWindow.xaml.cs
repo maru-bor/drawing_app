@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Windows;
+using drawing_app.brushes;
 using Microsoft.Win32;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 
-
-namespace drawing_app;
+namespace drawing_app.ui;
 
 public partial class ImportBrushWindow
 {

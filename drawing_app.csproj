@@ -3,10 +3,11 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
+        <AssemblyName>SimpleART</AssemblyName>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
-        <ApplicationIcon>icons\app_logo.ico</ApplicationIcon>
+        <ApplicationIcon>assets\app_logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,17 +20,30 @@
 
     <ItemGroup>
       <None Remove="icons\eyedropper.png" />
-      <Resource Include="icons\eyedropper.png" />
+      <Resource Include="assets\eyedropper.png" />
       <None Remove="icons\plus.png" />
-      <Resource Include="icons\plus.png" />
+      <Resource Include="assets\plus.png" />
       <None Remove="icons\trash.png" />
-      <Resource Include="icons\trash.png" />
+      <Resource Include="assets\trash.png" />
       <None Remove="icons\zoomin.png" />
-      <Resource Include="icons\zoomin.png" />
+      <Resource Include="assets\zoomin.png" />
       <None Remove="icons\zoomout.png" />
-      <Resource Include="icons\zoomout.png" />
+      <Resource Include="assets\zoomout.png" />
       <None Remove="icons\app_logo.ico" />
-      <Resource Include="icons\app_logo.ico" />
+      <Resource Include="assets\app_logo.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="ui\MainWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="ui\ImportBrushWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
 </Project>

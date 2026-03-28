@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace drawing_app;
+namespace drawing_app.canvas;
 
 public class Layer
 {

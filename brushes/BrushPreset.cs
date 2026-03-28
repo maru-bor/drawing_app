@@ -1,12 +1,19 @@
-﻿namespace drawing_app;
+﻿using SkiaSharp;
 
-public class BrushMetaData
+namespace drawing_app.brushes;
+
+public class BrushPreset
 {
-
     public string Name { get; set; }
+
     public float Size { get; set; }
     public byte Opacity { get; set; }
     public float Spacing { get; set; }
+
     public bool IsEraser { get; set; }
+    public SKBitmap? BrushTip { get; set; }
     public bool IsImported { get; set; }
+    
+
+    
 }

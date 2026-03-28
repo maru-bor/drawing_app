@@ -1,13 +1,13 @@
-﻿<Window x:Class="drawing_app.MainWindow"
+﻿<Window x:Class="drawing_app.ui.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:local="clr-namespace:drawing_app"
+        xmlns:canvas="clr-namespace:drawing_app.canvas"
         mc:Ignorable="d"
         Title="SimpleART"
-        Icon="icons/app_logo.ico"
+        Icon="/assets/app_logo.ico"
         >
     <Grid>
         
@@ -64,19 +64,19 @@
                         Margin="340,20, 240, 20"
                 >
 
-                    <local:CanvasControl x:Name="DrawingCanvas"
+                    <canvas:CanvasControl x:Name="DrawingCanvas"
                                          Width="1120"
                                          Height="810"
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Top">
 
-                        <local:CanvasControl.LayoutTransform>
+                        <canvas:CanvasControl.LayoutTransform>
                             <ScaleTransform x:Name="CanvasScaleTransform"
                                             ScaleX="1"
                                             ScaleY="1"/>
-                        </local:CanvasControl.LayoutTransform>
+                        </canvas:CanvasControl.LayoutTransform>
 
-                    </local:CanvasControl>
+                    </canvas:CanvasControl>
             </Border>
             </ScrollViewer>
 
@@ -101,7 +101,7 @@
                             VerticalAlignment="Top"
                             Margin="5"
                             Click="PickColor_Click">
-                        <Image Source="icons/eyedropper.png" Width="20"/>
+                        <Image Source="/assets/eyedropper.png" Width="20"/>
                     </Button>
                 </Grid>
 
@@ -179,10 +179,10 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="40" Height="40" Margin="5" Click="AddLayer_Click">
-                    <Image Source="/icons/plus.png" Width="20"/>
+                    <Image Source="/assets/plus.png" Width="20"/>
                 </Button>
                 <Button Width="40" Height="40" Margin="5" Click="DeleteLayer_Click">
-                    <Image Source="/icons/trash.png" Width="20"/>
+                    <Image Source="/assets/trash.png" Width="20"/>
                 </Button>
             </StackPanel>
 

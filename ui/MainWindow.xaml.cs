@@ -1,15 +1,17 @@
-﻿using Microsoft.Win32;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using drawing_app.brushes;
+using drawing_app.canvas;
+using drawing_app.cmds;
+using Microsoft.Win32;
 using SkiaSharp;
 using MessageBox = System.Windows.MessageBox;
 using WindowState = System.Windows.WindowState;
 
-namespace drawing_app;
+namespace drawing_app.ui;
 public partial class MainWindow 
 {
     public ICommand UndoCommand { get; }

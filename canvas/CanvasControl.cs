@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
+using drawing_app.brushes;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 
-namespace drawing_app;
+namespace drawing_app.canvas;
 
 public class CanvasControl : SKElement
 {
@@ -22,7 +23,7 @@ public class CanvasControl : SKElement
     public SKBitmap? ActiveBrushTip { get; set; }
     private SKBitmap? _livePreviewBackup;
     public bool IsColorPicker { get; set; }
-    public event Action<SKColor> ColorPicked;
+    public event Action<SKColor>? ColorPicked;
     public float Zoom { get; set; } = 1f;
 
     public CanvasControl()
@@ -97,11 +98,11 @@ public class CanvasControl : SKElement
             int x = (int)point.X;
             int y = (int)point.Y;
 
-            if (x >= 0 && x < merged.Width && y >= 0 && y < merged.Height)
+            if (x >= 0 && merged != null && x < merged.Width && y >= 0 && y < merged.Height)
             {
                 var color = merged.GetPixel(x, y);
 
-                ColorPicked.Invoke(color);
+                if (ColorPicked != null) ColorPicked.Invoke(color);
             }
 
             return;
@@ -129,15 +130,13 @@ public class CanvasControl : SKElement
         layer.Bitmap = _livePreviewBackup.Copy();
 
         using var canvas = new SKCanvas(layer.Bitmap);
-        using var paint = new SKPaint
-        {
-            IsAntialias = true,
-            StrokeCap = SKStrokeCap.Round,
-            Color = IsEraser
-                ? SKColors.Transparent
-                : BrushColor.WithAlpha(BrushOpacity),
-            BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver
-        };
+        using var paint = new SKPaint();
+        paint.IsAntialias = true;
+        paint.StrokeCap = SKStrokeCap.Round;
+        paint.Color = IsEraser
+            ? SKColors.Transparent
+            : BrushColor.WithAlpha(BrushOpacity);
+        paint.BlendMode = IsEraser ? SKBlendMode.Clear : SKBlendMode.SrcOver;
 
         DrawSmoothStroke(canvas, _currentStroke, paint, BrushThickness, BrushSpacing, ActiveBrushTip);
 
@@ -275,10 +274,8 @@ public class CanvasControl : SKElement
             if (!layer.Visible)
                 continue;
 
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(255,255,255,(byte)(255 * layer.Opacity))
-            };
+            using var paint = new SKPaint();
+            paint.Color = new SKColor(255,255,255,(byte)(255 * layer.Opacity));
 
             canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
         }
@@ -339,7 +336,7 @@ public class CanvasControl : SKElement
     }
 
 
-    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint> points, SKPaint paint, float brushSize, float spacing,
+    public void DrawSmoothStroke(SKCanvas canvas, List<SKPoint>? points, SKPaint paint, float brushSize, float spacing,
         SKBitmap? brushTip = null)
     {
         if (points == null || points.Count == 0)

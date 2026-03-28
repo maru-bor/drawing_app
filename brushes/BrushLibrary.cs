@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-
-namespace drawing_app;
+namespace drawing_app.brushes;
 
 public class BrushLibrary
 {

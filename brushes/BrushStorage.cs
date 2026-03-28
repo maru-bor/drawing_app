@@ -2,7 +2,7 @@
 using System.Text.Json;
 using SkiaSharp;
 
-namespace drawing_app;
+namespace drawing_app.brushes;
 
 public class BrushStorage
 {

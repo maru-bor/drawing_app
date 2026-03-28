@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace drawing_app;
+namespace drawing_app.cmds;
 
 public class RelayCommand : ICommand
 {
