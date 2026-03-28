@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>icons\app_logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,6 +28,8 @@
       <Resource Include="icons\zoomin.png" />
       <None Remove="icons\zoomout.png" />
       <Resource Include="icons\zoomout.png" />
+      <None Remove="icons\app_logo.ico" />
+      <Resource Include="icons\app_logo.ico" />
     </ItemGroup>
 
 </Project>

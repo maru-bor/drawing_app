@@ -6,7 +6,9 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:drawing_app"
         mc:Ignorable="d"
-        Title="SimpleART">
+        Title="SimpleART"
+        Icon="icons/app_logo.ico"
+        >
     <Grid>
         
         <Grid.RowDefinitions>
@@ -183,40 +185,6 @@
                     <Image Source="/icons/trash.png" Width="20"/>
                 </Button>
             </StackPanel>
-
-        </StackPanel>
-
-     
-        <StackPanel Grid.Row="1"
-                    Margin="0,20,0,0"
-                    VerticalAlignment="Bottom">
-
-              
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center">
-
-                    <Button Width="25" 
-                            Height="25"
-                            Click="ZoomOut_Click">
-                        <Image Source="/icons/zoomout.png" Width="20"/>
-                    </Button>
-
-                    <Slider x:Name="ZoomSlider"
-                            Minimum="0.25"
-                            Maximum="4"
-                            Value="1"
-                            Width="120"
-                            Margin="5,0"
-                            IsMoveToPointEnabled="True"
-                            ValueChanged="ZoomSlider_ValueChanged"/>
-
-                    <Button Width="25" 
-                            Height="25"
-                            Click="ZoomIn_Click">
-                        <Image Source="/icons/zoomin.png" Width="20"/>
-                    </Button>
-
-                </StackPanel>
 
         </StackPanel>
 

@@ -16,10 +16,8 @@ public partial class MainWindow : Window
     public ICommand UndoCommand { get; }
     public ICommand RedoCommand { get; }
     
-    public double CurrentZoom => ZoomSlider?.Value ?? 1.0;
-    
     private Point _dragStartPoint;
-    private Layer _draggedLayer;
+    private Layer? _draggedLayer;
     
     private string? _currentFilePath;
     public MainWindow()
@@ -103,7 +101,9 @@ public partial class MainWindow : Window
         if (Math.Abs(currentPosition.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
             Math.Abs(currentPosition.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
         {
+            Mouse.OverrideCursor = Cursors.SizeAll;
             DragDrop.DoDragDrop(LayerList, _draggedLayer, DragDropEffects.Move);
+            Mouse.OverrideCursor = null;
         }
     }
     
@@ -215,27 +215,6 @@ public partial class MainWindow : Window
         Mouse.OverrideCursor = Cursors.Cross;
     }
     
-    private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (CanvasScaleTransform != null)
-        {
-            CanvasScaleTransform.ScaleX = e.NewValue;
-            CanvasScaleTransform.ScaleY = e.NewValue;
-            
-            CanvasScaleTransform.CenterX = DrawingCanvas.Width / 2;
-            CanvasScaleTransform.CenterY = DrawingCanvas.Height / 2;
-        }
-    }
-    
-    private void ZoomIn_Click(object sender, RoutedEventArgs e)
-    {
-        ZoomSlider.Value = Math.Min(ZoomSlider.Value + 0.1, ZoomSlider.Maximum);
-    }
-    
-    private void ZoomOut_Click(object sender, RoutedEventArgs e)
-    {
-        ZoomSlider.Value = Math.Max(ZoomSlider.Value - 0.1, ZoomSlider.Minimum);
-    }
     private void Save_Click(object? sender, RoutedEventArgs? e)
     {
         if (!string.IsNullOrEmpty(_currentFilePath))
@@ -348,7 +327,6 @@ public partial class MainWindow : Window
 
         LayerList.SelectedIndex = 0;
 
-        ZoomSlider.Value = 1.0;
         _currentFilePath = null;
     }
     

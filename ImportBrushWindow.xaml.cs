@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 
+
 namespace drawing_app;
 
 public partial class ImportBrushWindow : Window
@@ -16,6 +17,8 @@ public partial class ImportBrushWindow : Window
     {
         InitializeComponent();
     }
+    
+    
     
     private void OnChooseImage(object sender, RoutedEventArgs e)
     {
