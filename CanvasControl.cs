@@ -18,10 +18,10 @@ public class CanvasControl : SKElement
     public byte BrushOpacity { get; set; } = 255;
     public SKColor BrushColor { get; set; } = new SKColor(0, 0, 0);
     public float BrushSpacing { get; set; } = 0.25f;
-    public bool IsEraser { get; set; } = false;
+    public bool IsEraser { get; set; }
     public SKBitmap? ActiveBrushTip { get; set; }
     private SKBitmap? _livePreviewBackup;
-    public bool IsColorPicker { get; set; } = false;
+    public bool IsColorPicker { get; set; }
     public event Action<SKColor> ColorPicked;
     public float Zoom { get; set; } = 1f;
 
@@ -31,8 +31,8 @@ public class CanvasControl : SKElement
         MouseDown += OnMouseDown;
         MouseMove += OnMouseMove;
         MouseUp += OnMouseUp;
-        SizeChanged += (_, __) => InvalidateVisual();
-        Loaded += (_, __) => InitializeBaseLayer();
+        SizeChanged += (_, _) => InvalidateVisual();
+        Loaded += (_, _) => InitializeBaseLayer();
     }
 
     private void InitializeBaseLayer()
@@ -93,8 +93,6 @@ public class CanvasControl : SKElement
             var point = GetMousePosition(e);
 
             using var merged = GetMergedBitmap();
-            if (merged == null)
-                return;
 
             int x = (int)point.X;
             int y = (int)point.Y;
@@ -347,7 +345,6 @@ public class CanvasControl : SKElement
         if (points == null || points.Count == 0)
             return;
 
-        float radius = brushSize / 2f;
         SKPoint lastDab = points[0];
 
         float actualSpacing = brushSize * spacing;
@@ -378,7 +375,7 @@ public class CanvasControl : SKElement
         }
     }
 
-    private SKBitmap GetMergedBitmap()
+    private SKBitmap? GetMergedBitmap()
     {
         if (_layers.Count == 0)
             return null;
@@ -396,10 +393,8 @@ public class CanvasControl : SKElement
             if (!layer.Visible)
                 continue;
 
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
-            };
+            using var paint = new SKPaint();
+            paint.Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity));
 
             canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
         }

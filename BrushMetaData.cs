@@ -2,6 +2,7 @@
 
 public class BrushMetaData
 {
+
     public string Name { get; set; }
     public float Size { get; set; }
     public byte Opacity { get; set; }

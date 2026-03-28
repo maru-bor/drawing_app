@@ -6,12 +6,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using SkiaSharp;
-using Xceed.Wpf.Toolkit;
 using MessageBox = System.Windows.MessageBox;
 using WindowState = System.Windows.WindowState;
 
 namespace drawing_app;
-public partial class MainWindow : Window
+public partial class MainWindow 
 {
     public ICommand UndoCommand { get; }
     public ICommand RedoCommand { get; }
@@ -34,7 +33,7 @@ public partial class MainWindow : Window
         InputBindings.Add(new KeyBinding(RedoCommand, new KeyGesture(Key.Y, ModifierKeys.Control)));
         
         DrawingCanvas.ColorPicked += OnColorPicked;
-        Loaded += (_, __) =>
+        Loaded += (_, _) =>
         {
             LayerList.ItemsSource = DrawingCanvas.Layers;
             LayerList.SelectedIndex = DrawingCanvas.ActiveLayerIndex;
@@ -84,7 +83,7 @@ public partial class MainWindow : Window
     {
         _dragStartPoint = e.GetPosition(null);
 
-        var item = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject) as ListBoxItem;
+        var item = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject ?? throw new InvalidOperationException()) as ListBoxItem;
         if (item != null)
         {
             _draggedLayer = item.DataContext as Layer;
@@ -114,7 +113,7 @@ public partial class MainWindow : Window
 
         var droppedLayer = e.Data.GetData(typeof(Layer)) as Layer;
 
-        var targetItem = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject) as ListBoxItem;
+        var targetItem = ItemsControl.ContainerFromElement(LayerList, e.OriginalSource as DependencyObject ?? throw new InvalidOperationException()) as ListBoxItem;
         if (targetItem == null)
             return;
 
@@ -122,17 +121,19 @@ public partial class MainWindow : Window
 
         var layers = DrawingCanvas.Layers;
 
-        int oldIndex = layers.IndexOf(droppedLayer);
-        int newIndex = layers.IndexOf(targetLayer);
-
-        if (oldIndex != newIndex)
+        if (droppedLayer != null &&  targetLayer != null)
         {
-            layers.Move(oldIndex, newIndex);
-            LayerList.SelectedIndex = newIndex;
+            int oldIndex = layers.IndexOf(droppedLayer);
+            int newIndex = layers.IndexOf(targetLayer);
 
-            // IMPORTANT: keep active layer in sync
-            DrawingCanvas.ActiveLayerIndex = newIndex;
-            DrawingCanvas.InvalidateVisual();
+            if (oldIndex != newIndex)
+            {
+                layers.Move(oldIndex, newIndex);
+                LayerList.SelectedIndex = newIndex;
+
+                DrawingCanvas.ActiveLayerIndex = newIndex;
+                DrawingCanvas.InvalidateVisual();
+            }
         }
     }
     
@@ -223,7 +224,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            SaveAs_Click(sender, e);
+            if (sender != null && e != null) SaveAs_Click(sender, e);
         }
     }
 
@@ -261,10 +262,8 @@ public partial class MainWindow : Window
             if (!layer.Visible) 
                 continue;
 
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity))
-            };
+            using var paint = new SKPaint();
+            paint.Color = new SKColor(255, 255, 255, (byte)(255 * layer.Opacity));
 
             canvas.DrawBitmap(layer.Bitmap, 0, 0, paint);
         }

@@ -7,7 +7,7 @@ using SkiaSharp.Views.WPF;
 
 namespace drawing_app;
 
-public partial class ImportBrushWindow : Window
+public partial class ImportBrushWindow
 {
     public BrushPreset? ResultBrush { get; private set; }
 
@@ -75,11 +75,11 @@ public partial class ImportBrushWindow : Window
     
     private SKBitmap ResizeBrush(SKBitmap original)
     {
-        const int MAX_SIZE = 256;
+        const int maxSize = 256;
 
         float scale = Math.Min(
-            MAX_SIZE / (float)original.Width,
-            MAX_SIZE / (float)original.Height);
+            maxSize / (float)original.Width,
+            maxSize / (float)original.Height);
 
         if (scale >= 1f)
             return original.Copy();
@@ -124,12 +124,10 @@ public partial class ImportBrushWindow : Window
         using var canvas = new SKCanvas(preview);
         canvas.Clear(SKColors.Transparent);
 
-        using var paint = new SKPaint
-        {
-            ColorFilter = SKColorFilter.CreateBlendMode(
-                SKColors.Black,  
-                SKBlendMode.SrcIn)
-        };
+        using var paint = new SKPaint();
+        paint.ColorFilter = SKColorFilter.CreateBlendMode(
+            SKColors.Black,  
+            SKBlendMode.SrcIn);
 
         canvas.DrawBitmap(mask, 0, 0, paint);
 

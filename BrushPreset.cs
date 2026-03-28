@@ -13,10 +13,7 @@ public class BrushPreset
     public bool IsEraser { get; set; }
     public SKBitmap? BrushTip { get; set; }
     public bool IsImported { get; set; }
-
-    public BrushPreset()
-    {
-    }
+    
 
     
 }

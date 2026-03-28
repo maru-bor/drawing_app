@@ -67,13 +67,13 @@ public class BrushLibrary
                 IsImported = false
             }
         };
-    public static void Add(BrushPreset brush)
+    public static void Add(BrushPreset? brush)
     {
         if (brush == null) return;
         DefaultBrushes.Add(brush);
     }
 
-    public static void Remove(BrushPreset brush)
+    public static void Remove(BrushPreset? brush)
     {
         if (brush == null) return;
         DefaultBrushes.Remove(brush);
